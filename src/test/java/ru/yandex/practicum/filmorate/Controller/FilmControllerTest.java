@@ -13,7 +13,7 @@ class FilmControllerTest {
     private FilmController filmController;
 
     @BeforeEach
-    void start(){
+    void start() {
         filmController = new FilmController();
     }
 
@@ -25,8 +25,9 @@ Film film = Film.builder()
         .releaseDate(LocalDate.of(1790,9,21))
         .duration(120)
         .build();
-        assertThrows(ValidationException.class, ()-> filmController.validate(film));
+        assertThrows(ValidationException.class, () -> filmController.validate(film));
     }
+
     @Test
     void validateFilmPositive() {
         Film film = Film.builder()
