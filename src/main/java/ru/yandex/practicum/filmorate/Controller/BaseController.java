@@ -15,14 +15,14 @@ public abstract class BaseController<T extends Unit> {
     private final Map<Long, T> storage = new HashMap<>();
     public static long generationId = 0;
 
-    public T making(T data){
+    public T making(T data) {
         validate(data);
         data.setId(generationIdUnit());
         storage.put(data.getId(), data);
             return data;
     }
 
-    public T update(T data){
+    public T update(T data) {
         validate(data);
         if (storage.get(data.getId()) != null) {
             storage.put(data.getId(), data);
@@ -33,13 +33,13 @@ public abstract class BaseController<T extends Unit> {
             return data;
     }
 
-    public List<T> getAll(){
+    public List<T> getAll() {
         return new ArrayList<>(storage.values());
     }
+
     public abstract void validate(T data);
 
-    private long generationIdUnit(){
+    private long generationIdUnit() {
         return ++generationId;
     }
-
 }
