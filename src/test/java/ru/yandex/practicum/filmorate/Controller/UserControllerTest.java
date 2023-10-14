@@ -13,7 +13,7 @@ class UserControllerTest {
     private UserController userController;
 
     @BeforeEach
-    void start(){
+    void start() {
         userController = new UserController();
     }
 
