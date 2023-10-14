@@ -38,7 +38,7 @@ public abstract class BaseController<T extends Unit> {
     }
     
     public abstract void validate(T data);
-
+    
     private long generationIdUnit() {
         return ++generationId;
     }
