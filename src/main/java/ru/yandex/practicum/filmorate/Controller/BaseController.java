@@ -36,9 +36,7 @@ public abstract class BaseController<T extends Unit> {
     public List<T> getAll() {
         return new ArrayList<>(storage.values());
     }
-    
     public abstract void validate(T data);
-    
     private long generationIdUnit() {
         return ++generationId;
     }
