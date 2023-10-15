@@ -16,15 +16,8 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
 
-    private static long generationId = 0;
+    private long generationId = 0;
     private final Map<Long, User> storage = new HashMap<>();
-
-    public void validate(User data) {
-        if (data.getName() == null || data.getName().isBlank()) {
-            data.setName(data.getLogin());
-            log.info("Display name is empty - login will be used - {} ", data.getName());
-        }
-    }
 
     @PostMapping
     public User createFilm(@Valid() @RequestBody User user) {
@@ -37,8 +30,8 @@ public class UserController {
 
     @PutMapping
     public User updateFilm(@Valid @RequestBody User user) {
-        validate(user);
         if (storage.get(user.getId()) != null) {
+            validate(user);
             storage.put(user.getId(), user);
             log.info("The user was update {}",user);
         } else {
@@ -53,6 +46,13 @@ public class UserController {
         List<User> list = new ArrayList<>(storage.values());
         log.info("The film was get all {}", list);
         return list;
+    }
+
+    protected void validate(User data) {
+        if (data.getName() == null || data.getName().isBlank()) {
+            data.setName(data.getLogin());
+            log.info("Display name is empty - login will be used - {} ", data.getName());
+        }
     }
 
     private long generationIdUnit() {

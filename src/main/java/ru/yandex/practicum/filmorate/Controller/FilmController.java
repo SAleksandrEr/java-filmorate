@@ -17,7 +17,7 @@ import java.util.Map;
 @RequestMapping("/films")
 public class FilmController {
     private static final LocalDate DATA_RELIES_MIN = LocalDate.of(1895,12,28);
-    private static long generationId = 0;
+    private long generationId = 0;
     private final Map<Long, Film> storage = new HashMap<>();
 
     @PostMapping
@@ -31,8 +31,8 @@ public class FilmController {
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-        validate(film);
         if (storage.get(film.getId()) != null) {
+            validate(film);
             storage.put(film.getId(), film);
             log.info("The film was update {}",film);
         } else {
@@ -49,8 +49,7 @@ public class FilmController {
             return list;
     }
 
-
-    public void validate(Film data) {
+    protected void validate(Film data) {
         if (data.getReleaseDate().isBefore(DATA_RELIES_MIN)) {
             log.warn("The film date is not correct {} ",data.getReleaseDate());
             throw new ValidationException("Invalid date" + data);
