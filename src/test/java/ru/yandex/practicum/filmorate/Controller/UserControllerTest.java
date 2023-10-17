@@ -24,7 +24,7 @@ class UserControllerTest {
                 .login("Test")
                 .email("test@test.ru")
                 .birthday(LocalDate.of(1990,06,01)).build();
-        userController.validate(user);
+        userController.createUser(user);
         assertEquals(user.getName(),user.getLogin());
     }
 
@@ -35,7 +35,7 @@ class UserControllerTest {
                 .login("Test")
                 .email("test@test.ru")
                 .birthday(LocalDate.of(1990,06,01)).build();
-        userController.validate(user);
+        userController.createUser(user);
         assertEquals(user.getName(),user.getLogin());
     }
 }

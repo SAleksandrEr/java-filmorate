@@ -25,7 +25,7 @@ Film film = Film.builder()
         .releaseDate(LocalDate.of(1790,9,21))
         .duration(120)
         .build();
-        assertThrows(ValidationException.class, () -> filmController.validate(film));
+        assertThrows(ValidationException.class, () -> filmController.createFilm(film));
     }
 
     @Test
@@ -36,7 +36,7 @@ Film film = Film.builder()
                 .releaseDate(LocalDate.of(1985,9,21))
                 .duration(120)
                 .build();
-        filmController.validate(film);
+        filmController.createFilm(film);
     }
 
 }

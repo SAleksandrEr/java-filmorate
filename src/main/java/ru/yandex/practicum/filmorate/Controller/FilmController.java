@@ -49,7 +49,7 @@ public class FilmController {
             return list;
     }
 
-    protected void validate(Film data) {
+    private void validate(Film data) {
         if (data.getReleaseDate().isBefore(DATA_RELIES_MIN)) {
             log.warn("The film date is not correct {} ",data.getReleaseDate());
             throw new ValidationException("Invalid date" + data);

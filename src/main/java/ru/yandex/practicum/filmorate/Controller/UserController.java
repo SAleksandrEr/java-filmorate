@@ -20,7 +20,7 @@ public class UserController {
     private final Map<Long, User> storage = new HashMap<>();
 
     @PostMapping
-    public User createFilm(@Valid() @RequestBody User user) {
+    public User createUser(@Valid() @RequestBody User user) {
         validate(user);
         user.setId(generationIdUnit());
         storage.put(user.getId(), user);
@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateFilm(@Valid @RequestBody User user) {
+    public User updateUser(@Valid @RequestBody User user) {
         if (storage.get(user.getId()) != null) {
             validate(user);
             storage.put(user.getId(), user);
@@ -48,7 +48,7 @@ public class UserController {
         return list;
     }
 
-    protected void validate(User data) {
+    private void validate(User data) {
         if (data.getName() == null || data.getName().isBlank()) {
             data.setName(data.getLogin());
             log.info("Display name is empty - login will be used - {} ", data.getName());
