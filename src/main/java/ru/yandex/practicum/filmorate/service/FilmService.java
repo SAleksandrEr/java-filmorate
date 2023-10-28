@@ -17,7 +17,7 @@ public class FilmService {
     private final UserService userService;
 
    @Autowired
-    public FilmService (FilmStorage filmStorage,UserService userService) {
+    public FilmService(FilmStorage filmStorage, UserService userService) {
         this.filmStorage = filmStorage;
         this.userService = userService;
     }
@@ -29,6 +29,7 @@ public class FilmService {
         log.info("The film was get of ID {} ", id);
         return filmStorage.getFilmsId(id);
     }
+
     public Film createLikeFilm(Long id, Long userId) {
         if ((filmStorage.getFilmsId(id) == null) || (userService.findUsersId(userId) == null)) {
             throw new DataNotFoundException("FilmID");
@@ -51,9 +52,9 @@ public class FilmService {
 
     public List<Film> findFilmsOfLikes(Integer count) {
         log.info("Returns a list of the first count movies by number of likes {}", count);
-        return filmStorage.getAllFilm().stream().
-            sorted(this::compare).
-            limit(count).collect(Collectors.toList());
+        return filmStorage.getAllFilm().stream()
+                .sorted(this::compare)
+                .limit(count).collect(Collectors.toList());
     }
 
     private int compare(Film p0, Film p1) {
