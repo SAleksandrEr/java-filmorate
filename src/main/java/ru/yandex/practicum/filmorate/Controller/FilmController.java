@@ -1,62 +1,78 @@
 package ru.yandex.practicum.filmorate.Controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private static final LocalDate DATA_RELIES_MIN = LocalDate.of(1895,12,28);
-    private long generationId = 0;
-    private final Map<Long, Film> storage = new HashMap<>();
+    private final FilmStorage filmStorage;
+    private final FilmService filmService;
+    @Autowired
+    public FilmController(FilmStorage filmStorage, FilmService filmService) {
+        this.filmStorage = filmStorage;
+        this.filmService = filmService;
+    }
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
-        validate(film);
-        film.setId(generationIdUnit());
-        storage.put(film.getId(), film);
-        log.info("The film was created {}",film);
-            return film;
+        return filmStorage.createFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-        if (storage.get(film.getId()) != null) {
-            validate(film);
-            storage.put(film.getId(), film);
-            log.info("The film was update {}",film);
-        } else {
-            log.warn("Exception, Data not found  id:{}", film.getId());
-            throw new DataNotFoundException("Data not found " + film.getId());
-        }
-            return film;
+        return filmStorage.updateFilm(film);
     }
 
     @GetMapping
     public List<Film> getAllFilm() {
-        List<Film> list = new ArrayList<>(storage.values());
-        log.info("The film was get all {}", list);
-            return list;
+        return filmStorage.getAllFilm();
     }
 
-    private void validate(Film data) {
-        if (data.getReleaseDate().isBefore(DATA_RELIES_MIN)) {
-            log.warn("The film date is not correct {} ",data.getReleaseDate());
-            throw new ValidationException("Invalid date" + data);
+    @GetMapping("/{id}")
+    public Film findFilmsId(@PathVariable("id") Optional<Long> id){
+        if (id.isPresent()) {
+            return filmService.findFilmsId(id.get());
+        } else {
+            throw new ValidationException("Введенные данные не корректны " + id.get());
         }
     }
 
-    private long generationIdUnit() {
-        return ++generationId;
+    @PutMapping("/{id}/like/{userId}")
+    public Film createLikeFilm(@PathVariable("id") Optional<Long> id,
+                           @PathVariable("userId") Optional<Long> userId) {
+        if (id.isPresent() & userId.isPresent()) {
+            return filmService.createLikeFilm(id.get(),userId.get());
+        } else {
+            throw new ValidationException("Введенные данные не корректны " + id.get() + " " + userId.get());
+        }
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public Film deleteLikeId(@PathVariable("id") Optional<Long> id,
+                        @PathVariable("userId") Optional<Long> userId){
+        if (id.isPresent() & userId.isPresent()) {
+            return filmService.deleteLikeId(id.get(),userId.get());
+        } else {
+            throw new ValidationException("Введенные данные не корректны " + id.get() + " " + userId.get());
+        }
+    }
+
+    @GetMapping("/popular")
+    public List<Film> findFilmsOfLikes(@RequestParam(defaultValue = "10", required = false) Optional<Integer> count) {
+        if (count.isPresent() & (count.get() > 0)) {
+           return filmService.findFilmsOfLikes(count.get());
+        } else {
+            throw new ValidationException("Введенные данные не корректны " + count.get());
+        }
     }
 }
