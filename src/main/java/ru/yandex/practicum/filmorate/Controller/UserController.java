@@ -82,7 +82,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User findUsersId(@PathVariable("id") Optional<Long> id){
+    public User findUsersId(@PathVariable("id") Optional<Long> id) {
         if (id.isPresent()) {
             return userService.findUsersId(id.get());
         } else {
