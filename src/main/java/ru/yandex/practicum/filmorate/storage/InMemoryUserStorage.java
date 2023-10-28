@@ -34,13 +34,13 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         List<User> list = new ArrayList<>(storage.values());
         log.info("The film was get all {}", list);
         return list;
     }
 
-    public User getUsersId(Long id){
+    public User getUsersId(Long id) {
         User user = storage.get(id);
         log.info("The user was get User Id {}", id);
         return user;
