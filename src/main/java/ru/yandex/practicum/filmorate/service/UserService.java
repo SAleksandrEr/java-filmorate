@@ -57,11 +57,11 @@ public class UserService {
         if ((userStorage.getUsersId(id) == null) || (userStorage.getUsersId(otherId) == null)) {
             throw new DataNotFoundException("UserID");
         }
-        Set<Long> UserId = userStorage.getUsersId(id).getFriends();
-        Set<Long> UserFriendId = userStorage.getUsersId(otherId).getFriends();
-        UserId.retainAll(UserFriendId);
+        Set<Long> userId = userStorage.getUsersId(id).getFriends();
+        Set<Long> userFriendId = userStorage.getUsersId(otherId).getFriends();
+        userId.retainAll(userFriendId);
         List<User> results = new ArrayList<>();
-        for (Long userList : UserId) {
+        for (Long userList : userId) {
             results.add(userStorage.getUsersId(userList));
         }
         log.info("Displays a list of friends shared with another user ID {} ", id);
