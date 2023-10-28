@@ -21,6 +21,7 @@ public class InMemoryUserStorage implements UserStorage {
         log.info("The user was created {}",user);
         return user;
     }
+
     public User updateUser(User user) {
         if (storage.get(user.getId()) != null) {
             validate(user);
@@ -31,7 +32,6 @@ public class InMemoryUserStorage implements UserStorage {
             throw new DataNotFoundException("Data not found " + user.getId());
         }
         return user;
-
     }
 
     public List<User> getAllUsers(){
@@ -45,9 +45,11 @@ public class InMemoryUserStorage implements UserStorage {
         log.info("The user was get User Id {}", id);
         return user;
     }
+
     public void removeAllUsers() {
 
     }
+
     public void removeIdUser(Long id) {
 
     }

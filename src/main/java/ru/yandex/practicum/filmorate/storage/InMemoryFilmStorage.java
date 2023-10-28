@@ -46,16 +46,16 @@ public class InMemoryFilmStorage implements FilmStorage {
         return list;
     }
 
-    public Film getFilmsId(Long id){
+    public Film getFilmsId(Long id) {
         Film film = storageFilm.get(id);
         log.info("The film was get of ID {}", film);
         return film;
     }
+
     public void removeAllFilms() {
-
     }
-    public void removeIdFilms(Long id) {
 
+    public void removeIdFilms(Long id) {
     }
 
     private void validate(Film data) {
