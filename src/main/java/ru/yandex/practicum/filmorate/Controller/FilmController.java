@@ -17,6 +17,7 @@ import java.util.*;
 public class FilmController {
     private final FilmStorage filmStorage;
     private final FilmService filmService;
+
     @Autowired
     public FilmController(FilmStorage filmStorage, FilmService filmService) {
         this.filmStorage = filmStorage;
@@ -39,7 +40,7 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film findFilmsId(@PathVariable("id") Optional<Long> id){
+    public Film findFilmsId(@PathVariable("id") Optional<Long> id) {
         if (id.isPresent()) {
             return filmService.findFilmsId(id.get());
         } else {
@@ -59,7 +60,7 @@ public class FilmController {
 
     @DeleteMapping("/{id}/like/{userId}")
     public Film deleteLikeId(@PathVariable("id") Optional<Long> id,
-                        @PathVariable("userId") Optional<Long> userId){
+                        @PathVariable("userId") Optional<Long> userId) {
         if (id.isPresent() & userId.isPresent()) {
             return filmService.deleteLikeId(id.get(),userId.get());
         } else {
