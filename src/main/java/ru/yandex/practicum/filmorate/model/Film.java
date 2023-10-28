@@ -33,6 +33,7 @@ public class Film extends Unit {
     private int duration;
 
     private Set<Long> likes = new HashSet<>();
+
     public void setLikes(Long like) {
         likes.add(like);
     }
