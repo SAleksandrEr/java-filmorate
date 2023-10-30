@@ -15,7 +15,6 @@ public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> storage = new HashMap<>();
 
     public User createUser(User user) {
-        validate(user);
         user.setId(generationIdUnit());
         storage.put(user.getId(), user);
         log.info("The user was created {}",user);
@@ -24,7 +23,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     public User updateUser(User user) {
         if (storage.get(user.getId()) != null) {
-            validate(user);
             storage.put(user.getId(), user);
             log.info("The user was update {}",user);
         } else {
@@ -34,7 +32,7 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    public List<User> getAllUsers() {
+    public List<User> getAllUser() {
         List<User> list = new ArrayList<>(storage.values());
         log.info("The film was get all {}", list);
         return list;
@@ -46,22 +44,7 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    public void removeAllUsers() {
-
-    }
-
-    public void removeIdUser(Long id) {
-
-    }
-
     private long generationIdUnit() {
         return ++generationId;
-    }
-
-    private void validate(User data) {
-        if (data.getName() == null || data.getName().isBlank()) {
-            data.setName(data.getLogin());
-            log.info("Display name is empty - login will be used - {} ", data.getName());
-        }
     }
 }

@@ -19,6 +19,20 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
+    public User createUsers(User user) {
+        validate(user);
+        return userStorage.createUser(user);
+    }
+
+    public User updateUsers(User user) {
+        validate(user);
+        return userStorage.updateUser(user);
+    }
+
+    public List<User> getAllUsers() {
+        return userStorage.getAllUser();
+    }
+
     public User createdFriendsId(Long id, Long friendId) {
         if ((userStorage.getUsersId(id) == null) || (userStorage.getUsersId(friendId) == null) || Objects.equals(id, friendId)) {
             throw new DataNotFoundException("UserID");
@@ -74,6 +88,13 @@ public class UserService {
         }
         log.info("The user was get of ID {} ", id);
         return userStorage.getUsersId(id);
+    }
+
+    private void validate(User data) {
+        if (data.getName() == null || data.getName().isBlank()) {
+            data.setName(data.getLogin());
+            log.info("Display name is empty - login will be used - {} ", data.getName());
+        }
     }
 }
 

@@ -4,14 +4,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class FilmService {
+    private static final LocalDate DATA_RELIES_MIN = LocalDate.of(1895,12,28);
+
     private final FilmStorage filmStorage;
 
     private final UserService userService;
@@ -20,6 +25,20 @@ public class FilmService {
     public FilmService(FilmStorage filmStorage, UserService userService) {
         this.filmStorage = filmStorage;
         this.userService = userService;
+    }
+
+    public Film createFilms(Film film) {
+        validate(film);
+        return filmStorage.createFilm(film);
+    }
+
+    public Film updateFilms(Film film) {
+           validate(film);
+        return filmStorage.updateFilm(film);
+    }
+
+    public List<Film> getAllFilms() {
+        return filmStorage.getAllFilm();
     }
 
     public Film findFilmsId(Long id) {
@@ -66,4 +85,12 @@ public class FilmService {
         }
         return result;
     }
+
+    private void validate(Film data) {
+        if (data.getReleaseDate().isBefore(DATA_RELIES_MIN)) {
+            log.warn("The film date is not correct {} ",data.getReleaseDate());
+            throw new ValidationException("Invalid date" + data);
+        }
+    }
+
 }
