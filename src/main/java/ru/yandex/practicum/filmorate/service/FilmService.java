@@ -42,17 +42,13 @@ public class FilmService {
     }
 
     public Film findFilmsId(Long id) {
-        if ((filmStorage.getFilmsId(id) == null)) {
-            throw new DataNotFoundException("FilmID");
-        }
+        Film film = filmStorage.getFilmsId(id);
         log.info("The film was get of ID {} ", id);
-        return filmStorage.getFilmsId(id);
+        return film;
     }
 
     public Film createLikeFilm(Long id, Long userId) {
-        if ((filmStorage.getFilmsId(id) == null) || (userService.findUsersId(userId) == null)) {
-            throw new DataNotFoundException("FilmID");
-        }
+        userService.findUsersId(userId);
         Film film = filmStorage.getFilmsId(id);
         film.setLikes(userId);
         log.info("The user liked the movie {} filme - ", film);
@@ -60,9 +56,7 @@ public class FilmService {
     }
 
     public Film deleteLikeId(Long id, Long userId) {
-        if ((filmStorage.getFilmsId(id) == null) || (userService.findUsersId(userId) == null)) {
-            throw new DataNotFoundException("FilmID");
-        }
+        userService.findUsersId(userId);
         Film film = filmStorage.getFilmsId(id);
         film.removeLikeId(userId);
         log.info("The user deleted the like FilmID - {}", id);
@@ -92,5 +86,4 @@ public class FilmService {
             throw new ValidationException("Invalid date" + data);
         }
     }
-
 }

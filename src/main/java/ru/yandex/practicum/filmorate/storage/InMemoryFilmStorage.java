@@ -43,6 +43,9 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public Film getFilmsId(Long id) {
         Film film = storageFilm.get(id);
+        if (film == null) {
+            throw new DataNotFoundException("FilmID");
+        }
         log.info("The film was get of ID {}", film);
         return film;
     }

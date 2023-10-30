@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.Controller;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -10,7 +9,6 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import javax.validation.Valid;
 import java.util.*;
 
-@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -37,52 +35,31 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-
     @PutMapping("/{id}/friends/{friendId}")
-    public User createdFriendsId(@PathVariable("id") Optional<Long> id,
-                                            @PathVariable("friendId") Optional<Long> friendId) {
-        if (id.isPresent() & friendId.isPresent()) {
-            return userService.createdFriendsId(id.get(),friendId.get());
-        } else {
-            throw new ValidationException("Введенные данные не корректны " + id.get() + " " + friendId.get());
-        }
+    public User createdFriendsId(@PathVariable("id") Long id,
+                                 @PathVariable("friendId") Long friendId) {
+            return userService.createdFriendsId(id,friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public User deleteFriendsId(@PathVariable("id") Optional<Long> id,
-                                @PathVariable("friendId") Optional<Long> friendId) {
-        if (id.isPresent() & friendId.isPresent()) {
-            return userService.deleteFriendsId(id.get(),friendId.get());
-        } else {
-            throw new ValidationException("Введенные данные не корректны " + id.get() + " " + friendId.get());
-        }
+    public User deleteFriendsId(@PathVariable("id") Long id,
+                                @PathVariable("friendId") Long friendId) {
+            return userService.deleteFriendsId(id,friendId);
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> findUsersFriendsId(@PathVariable("id") Optional<Long> id) {
-        if (id.isPresent()) {
-            return userService.findUsersFriendsId(id.get());
-        } else {
-            throw new ValidationException("Введенные данные не корректны " + id.get());
-        }
+    public List<User> findUsersFriendsId(@PathVariable("id") Long id) {
+            return userService.findUsersFriendsId(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> findUsersOtherId(@PathVariable("id") Optional<Long> id,
-                                       @PathVariable("otherId") Optional<Long> otherId) {
-        if (id.isPresent() & otherId.isPresent()) {
-            return userService.findUsersOtherId(id.get(),otherId.get());
-        } else {
-            throw new ValidationException("Введенные данные не корректны " + id.get() + " " + otherId.get());
-        }
+    public List<User> findUsersOtherId(@PathVariable("id") Long id,
+                                       @PathVariable("otherId") Long otherId) {
+            return userService.findUsersOtherId(id,otherId);
     }
 
     @GetMapping("/{id}")
-    public User findUsersId(@PathVariable("id") Optional<Long> id) {
-        if (id.isPresent()) {
-            return userService.findUsersId(id.get());
-        } else {
-            throw new ValidationException("Введенные данные не корректны " + id.get());
-        }
+    public User findUsersId(@PathVariable("id") Long id) {
+            return userService.findUsersId(id);
     }
 }

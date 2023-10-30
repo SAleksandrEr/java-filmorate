@@ -34,21 +34,18 @@ public class UserService {
     }
 
     public User createdFriendsId(Long id, Long friendId) {
-        if ((userStorage.getUsersId(id) == null) || (userStorage.getUsersId(friendId) == null) || Objects.equals(id, friendId)) {
+        if (Objects.equals(id, friendId)) {
             throw new DataNotFoundException("UserID");
         }
         User user = userStorage.getUsersId(id);
-        user.setFriends(friendId);
         User userFriend = userStorage.getUsersId(friendId);
+        user.setFriends(friendId);
         userFriend.setFriends(id);
         log.info("Created as a friend {}", user);
         return user;
     }
 
     public User deleteFriendsId(Long id, Long friendId) {
-        if ((userStorage.getUsersId(id) == null)) {
-            throw new DataNotFoundException("UserID");
-        }
         User user = userStorage.getUsersId(id);
         user.removeFriendsId(friendId);
         log.info("The user deleted the friend - {}", friendId);
@@ -56,9 +53,6 @@ public class UserService {
     }
 
     public List<User> findUsersFriendsId(Long id) {
-        if ((userStorage.getUsersId(id) == null)) {
-            throw new DataNotFoundException("UserID");
-        }
         List<User> results = new ArrayList<>();
         for (Long userList : userStorage.getUsersId(id).getFriends()) {
             results.add(userStorage.getUsersId(userList));
@@ -68,9 +62,6 @@ public class UserService {
     }
 
     public List<User> findUsersOtherId(Long id, Long otherId) {
-        if ((userStorage.getUsersId(id) == null) || (userStorage.getUsersId(otherId) == null)) {
-            throw new DataNotFoundException("UserID");
-        }
         Set<Long> userId = userStorage.getUsersId(id).getFriends();
         Set<Long> userFriendId = userStorage.getUsersId(otherId).getFriends();
         userId.retainAll(userFriendId);
@@ -83,11 +74,9 @@ public class UserService {
     }
 
     public User findUsersId(Long id) {
-        if ((userStorage.getUsersId(id) == null)) {
-            throw new DataNotFoundException("UserID");
-        }
+        User user = userStorage.getUsersId(id);
         log.info("The user was get of ID {} ", id);
-        return userStorage.getUsersId(id);
+        return user;
     }
 
     private void validate(User data) {

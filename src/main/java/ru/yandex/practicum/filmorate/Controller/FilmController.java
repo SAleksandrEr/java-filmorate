@@ -35,40 +35,28 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film findFilmsId(@PathVariable("id") Optional<Long> id) {
-        if (id.isPresent()) {
-            return filmService.findFilmsId(id.get());
-        } else {
-            throw new ValidationException("Введенные данные не корректны " + id.get());
-        }
+    public Film findFilmsId(@PathVariable("id") Long id) {
+            return filmService.findFilmsId(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public Film createLikeFilm(@PathVariable("id") Optional<Long> id,
-                           @PathVariable("userId") Optional<Long> userId) {
-        if (id.isPresent() & userId.isPresent()) {
-            return filmService.createLikeFilm(id.get(),userId.get());
-        } else {
-            throw new ValidationException("Введенные данные не корректны " + id.get() + " " + userId.get());
-        }
+    public Film createLikeFilm(@PathVariable("id") Long id,
+                           @PathVariable("userId") Long userId) {
+            return filmService.createLikeFilm(id,userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public Film deleteLikeId(@PathVariable("id") Optional<Long> id,
-                        @PathVariable("userId") Optional<Long> userId) {
-        if (id.isPresent() & userId.isPresent()) {
-            return filmService.deleteLikeId(id.get(),userId.get());
-        } else {
-            throw new ValidationException("Введенные данные не корректны " + id.get() + " " + userId.get());
-        }
+    public Film deleteLikeId(@PathVariable("id") Long id,
+                        @PathVariable("userId") Long userId) {
+            return filmService.deleteLikeId(id,userId);
     }
 
     @GetMapping("/popular")
-    public List<Film> findFilmsOfLikes(@RequestParam(defaultValue = "10", required = false) Optional<Integer> count) {
-        if (count.isPresent() & (count.get() > 0)) {
-           return filmService.findFilmsOfLikes(count.get());
+    public List<Film> findFilmsOfLikes(@RequestParam(defaultValue = "10", required = false) Integer count) {
+        if (count > 0) {
+           return filmService.findFilmsOfLikes(count);
         } else {
-            throw new ValidationException("Введенные данные не корректны " + count.get());
+            throw new ValidationException("Введенные данные не корректны " + count);
         }
     }
 }
