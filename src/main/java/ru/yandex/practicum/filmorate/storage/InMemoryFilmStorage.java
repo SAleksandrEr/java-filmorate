@@ -47,7 +47,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         return film;
     }
 
-
     private long generationIdUnit() {
         return ++generationId;
     }
