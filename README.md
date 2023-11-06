@@ -4,8 +4,11 @@
 ### Описание таблиц:
 #### > Film
 `\* Table Film {
+
  unit_id integer [primary key, note: 'Id фильма']
+ 
  name_film varchar [note: 'Имя фильма']
+ 
  description_film varchar [note: 'Описание фильма']
  releaseDate_film date [note: 'Дата выхода фильма']
  duration_film  integer [note: 'Длительность фильма в минутах']
