@@ -3,7 +3,8 @@
 ![Диаграмма БД](https://github.com/SAleksandrEr/java-filmorate/blob/main/Filmorate_DB_diagram.png)
 ### Описание таблиц:
 #### > Film
-`Table Film {
+`
+Table Film {
   unit_id integer [primary key, note: 'Id фильма']
   name_film varchar [note: 'Имя фильма']
   description_film varchar [note: 'Описание фильма']
@@ -15,7 +16,8 @@
                 PG-13 — детям до 13 лет просмотр не желателен,
                 R — лицам до 17 лет просматривать фильм можно только в присутствии взрослого,
                 NC-17 — лицам до 18 лет просмотр запрещён.']
-}`
+}
+`
 
 #### > Likes
   Table Likes {
