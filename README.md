@@ -3,13 +3,13 @@
 ![Диаграмма БД](https://github.com/SAleksandrEr/java-filmorate/blob/main/Filmorate_DB_diagram.png)
 ### Описание таблиц:
 #### > Film
-\* Table Film {
-  unit_id integer [primary key, note: 'Id фильма']
-  name_film varchar [note: 'Имя фильма']
-  description_film varchar [note: 'Описание фильма']
-  releaseDate_film date [note: 'Дата выхода фильма']
-  duration_film  integer [note: 'Длительность фильма в минутах']
-  mpa varchar [note: 'Возрастное ограничение - Motion Picture Association, сокращённо МРА:
+Table Film {
+unit_id integer [primary key, note: 'Id фильма']
+name_film varchar [note: 'Имя фильма']
+description_film varchar [note: 'Описание фильма']
+releaseDate_film date [note: 'Дата выхода фильма']
+duration_film  integer [note: 'Длительность фильма в минутах']
+mpa varchar [note: 'Возрастное ограничение - Motion Picture Association, сокращённо МРА:
   G — у фильма нет возрастных ограничений,
   PG — детям рекомендуется смотреть фильм с родителями,
   PG-13 — детям до 13 лет просмотр не желателен,
