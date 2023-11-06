@@ -42,5 +42,16 @@
   user_id integer [ref: > User.user_id, note: 'id пользователя связан с таблицей User']
   friendship_status varchar [note: 'Статус дружбы - unconfirmed, confirmed']
 }
+
 ### SQL запросы :
 
+#### > GET /users/
+  SELECT 
+  user_id
+  email_user
+  login_user
+  name_user
+  birthday_user
+FROM User
+ORDER BY user_id; 
+> 
