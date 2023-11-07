@@ -1,61 +1,64 @@
 package ru.yandex.practicum.filmorate.Controller;
 
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private long generationId = 0;
-    private final Map<Long, User> storage = new HashMap<>();
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
     public User createUser(@Valid() @RequestBody User user) {
-        validate(user);
-        user.setId(generationIdUnit());
-        storage.put(user.getId(), user);
-        log.info("The user was created {}",user);
-            return user;
+        return userService.createUsers(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        if (storage.get(user.getId()) != null) {
-            validate(user);
-            storage.put(user.getId(), user);
-            log.info("The user was update {}",user);
-        } else {
-            log.warn("Exception, Data not found  id:{}", user.getId());
-            throw new DataNotFoundException("Data not found " + user.getId());
-        }
-            return user;
+        return userService.updateUsers(user);
     }
 
     @GetMapping
-    public List<User> getAllFilm() {
-        List<User> list = new ArrayList<>(storage.values());
-        log.info("The film was get all {}", list);
-        return list;
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
     }
 
-    private void validate(User data) {
-        if (data.getName() == null || data.getName().isBlank()) {
-            data.setName(data.getLogin());
-            log.info("Display name is empty - login will be used - {} ", data.getName());
-        }
+    @PutMapping("/{id}/friends/{friendId}")
+    public User createdFriendsId(@PathVariable("id") Long id,
+                                 @PathVariable("friendId") Long friendId) {
+            return userService.createdFriendsId(id,friendId);
     }
 
-    private long generationIdUnit() {
-        return ++generationId;
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public User deleteFriendsId(@PathVariable("id") Long id,
+                                @PathVariable("friendId") Long friendId) {
+            return userService.deleteFriendsId(id,friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> findUsersFriendsId(@PathVariable("id") Long id) {
+            return userService.findUsersFriendsId(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> findUsersOtherId(@PathVariable("id") Long id,
+                                       @PathVariable("otherId") Long otherId) {
+            return userService.findUsersOtherId(id,otherId);
+    }
+
+    @GetMapping("/{id}")
+    public User findUsersId(@PathVariable("id") Long id) {
+            return userService.findUsersId(id);
     }
 }
