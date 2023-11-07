@@ -81,7 +81,7 @@ _SELECT u.user_id,
         u.email_user
         u.login_user
         u.name_user
-        u.birthday_user
+        u.birthday_user\
 FROM (SELECT f.friends_id\
 FROM Friends AS f\
 WHERE f.user_id = {id}\
