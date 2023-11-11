@@ -29,10 +29,15 @@ _Table Film {\
 #### > Genre
 
   _Table Genre {\
-  genre_id integer [primary key, note: 'Id жанра фильма']\
-  description_genre varchar [note: 'Описание жанра фильма - Комедия, Драма, Триллер, Документальный, Боевик']\
+ genre_id integer [primary key, ref: > Genre_list.genre_id, note: 'Id жанра фильма связан с таблицей Genre_list']\
   film_id integer [ref: > Film.unit_id, note: 'Id фильма связан с таблицей Film']\
 }_
+
+#### > Genre_list
+  _Table Genre_list {\
+  genre_id integer [primary key, note: 'Id жанра фильма связан с таблицей Genre']\
+  description_genre varchar [note: 'Описание жанра фильма - Комедия, Драма, Триллер, Документальный, Боевик']\
+  }_
 
 #### > User
 
