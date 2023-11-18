@@ -10,7 +10,7 @@ import java.util.List;
 @Slf4j
 @Service
 public class GenreService {
-    
+
     private final GenreStorage genreStorage;
 
     public GenreService(GenreStorage genreStorage) {
