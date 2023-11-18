@@ -28,8 +28,8 @@ public class FilmService {
     private final UserService userService;
 
     @Autowired
-    public FilmService(@Qualifier("filmDaoImpl") FilmStorage filmStorage, GenreService genreService
-            , LikesStorage likesStorage, UserService userService) {
+    public FilmService(@Qualifier("filmDaoImpl") FilmStorage filmStorage, GenreService genreService,
+                       LikesStorage likesStorage, UserService userService) {
         this.filmStorage = filmStorage;
         this.genreService = genreService;
         this.likesStorage = likesStorage;
@@ -56,8 +56,8 @@ public class FilmService {
     public List<Film> getAllFilms() {
         List<Film> film = filmStorage.getAllFilm();
         log.info("The all films was get {}", film.size());
-        return film.stream().peek(filmCurrent -> filmCurrent.setGenres(genreService.getFilmGenres(filmCurrent.getId()))).
-                collect(Collectors.toList());
+        return film.stream().peek(filmCurrent -> filmCurrent.setGenres(genreService.getFilmGenres(filmCurrent.getId())))
+            .collect(Collectors.toList());
     }
 
     public Film findFilmsId(Long id) {
