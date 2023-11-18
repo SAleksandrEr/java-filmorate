@@ -51,8 +51,8 @@ public class FilmDaoImpl implements FilmStorage {
            getFilmsId(film.getId());
            String sqlQuery = "UPDATE Film SET NAME_FILM = ?, DESCRIPTION_FILM = ?, " +
                    "RELEASEDATE_FILM = ?, DURATION_FILM = ?, MPA_ID = ? WHERE UNIT_ID = ?";
-           jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate())
-                   ,film.getDuration(), film.getMpa().getId(), film.getId());
+           jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
+                               film.getDuration(), film.getMpa().getId(), film.getId());
         return getFilmsId(film.getId());
     }
 
