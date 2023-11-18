@@ -35,6 +35,7 @@ public class LikesDaoImpl implements LikesStorage {
             throw new DataNotFoundException("deleteLikeId");
         }
     }
+
     @Override
     public Long createLikeFilm(Long filmId, Long userId) {
         String sqlQuery = "INSERT INTO Likes (user_id, film_id) VALUES (?, ?)";
