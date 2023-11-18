@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 import javax.validation.ConstraintViolationException;
+import java.sql.SQLException;
 
 @RestControllerAdvice
 public class ErrorHandler {
@@ -38,9 +39,15 @@ public class ErrorHandler {
         return new ErrorResponse(e.getObjectName());
     }
 
-    @ExceptionHandler
+   @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable e) {
+        return new ErrorResponse("Произошла непредвиденная ошибка.");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleSQLException(final SQLException e) {
         return new ErrorResponse("Произошла непредвиденная ошибка.");
     }
 }

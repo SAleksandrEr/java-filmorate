@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.dao;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
@@ -13,3 +13,4 @@ public interface UserStorage {
 
    User getUsersId(Long id);
 }
+

@@ -6,8 +6,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -26,18 +24,4 @@ public class User extends Unit {
 
     @PastOrPresent
     private LocalDate birthday;
-
-    private Set<Long> friends = new HashSet<>();
-
-    public void setFriends(Long friendsId) {
-        friends.add(friendsId);
-    }
-
-    public Set<Long> getFriends() {
-        return new HashSet<>(friends);
-    }
-
-    public void removeFriendsId(Long friendsId) {
-        friends.remove(friendsId);
-    }
 }

@@ -2,10 +2,13 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.LikesStorage;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.dao.FilmStorage;
+import ru.yandex.practicum.filmorate.model.Genres;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,64 +21,69 @@ public class FilmService {
 
     private final FilmStorage filmStorage;
 
+    private final GenreService genreService;
+
+    private final LikesStorage likesStorage;
+
     private final UserService userService;
 
-   @Autowired
-    public FilmService(FilmStorage filmStorage, UserService userService) {
+    @Autowired
+    public FilmService(@Qualifier("filmDaoImpl") FilmStorage filmStorage, GenreService genreService
+            , LikesStorage likesStorage, UserService userService) {
         this.filmStorage = filmStorage;
+        this.genreService = genreService;
+        this.likesStorage = likesStorage;
         this.userService = userService;
     }
 
     public Film createFilms(Film film) {
         validate(film);
-        return filmStorage.createFilm(film);
+        Film filmCurrant = filmStorage.createFilm(film);
+        filmCurrant.setGenres(genreService.createGenresFilm(film.getGenres(), filmCurrant.getId()));
+        log.info("The film was created with ID {}", filmCurrant.getId());
+        return filmCurrant;
     }
 
     public Film updateFilms(Film film) {
-           validate(film);
-        return filmStorage.updateFilm(film);
+        validate(film);
+        filmStorage.updateFilm(film);
+        genreService.updateGenresFilm(film.getGenres(), film.getId());
+        film = findFilmsId(film.getId());
+        log.info("The film was update {}",film.getId());
+        return film;
     }
 
     public List<Film> getAllFilms() {
-        return filmStorage.getAllFilm();
+        List<Film> film = filmStorage.getAllFilm();
+        log.info("The all films was get {}", film.size());
+        return film.stream().peek(filmCurrent -> filmCurrent.setGenres(genreService.getFilmGenres(filmCurrent.getId()))).
+                collect(Collectors.toList());
     }
 
     public Film findFilmsId(Long id) {
         Film film = filmStorage.getFilmsId(id);
-        log.info("The film was get of ID {} ", id);
+        List<Genres> genres = genreService.getFilmGenres(id);
+        film.setGenres(genres);
+        log.info("The film was get of ID {} ", film);
         return film;
     }
 
     public Film createLikeFilm(Long id, Long userId) {
+        findFilmsId(id);
         userService.findUsersId(userId);
-        Film film = filmStorage.getFilmsId(id);
-        film.setLikes(userId);
+        Film film = findFilmsId(likesStorage.createLikeFilm(id, userId));
         log.info("The user liked the movie {} filme - ", film);
         return film;
     }
 
-    public Film deleteLikeId(Long id, Long userId) {
-        userService.findUsersId(userId);
-        Film film = filmStorage.getFilmsId(id);
-        film.removeLikeId(userId);
-        log.info("The user deleted the like FilmID - {}", id);
-        return film;
+    public boolean deleteLikeId(Long id, Long userId) {
+            log.info("The user deleted the like FilmID - {}", id);
+            return likesStorage.deleteLikeId(id, userId);
     }
 
     public List<Film> findFilmsOfLikes(Integer count) {
+        List<Film> result = likesStorage.findFilmsOfLikes(count);
         log.info("Returns a list of the first count movies by number of likes {}", count);
-        return filmStorage.getAllFilm().stream()
-                .sorted(this::compare)
-                .limit(count).collect(Collectors.toList());
-    }
-
-    private int compare(Film p0, Film p1) {
-        int result = 0;
-        if (p0.getLikes().size() < p1.getLikes().size()) {
-            result = 1;
-        } else {
-            result = -1;
-        }
         return result;
     }
 
