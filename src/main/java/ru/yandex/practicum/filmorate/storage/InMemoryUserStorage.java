@@ -21,6 +21,7 @@ public class InMemoryUserStorage implements UserStorage {
         log.info("The user was created {}",user);
         return user;
     }
+
     public User updateUser(User user) {
         if (storage.get(user.getId()) != null) {
             storage.put(user.getId(), user);
@@ -31,11 +32,13 @@ public class InMemoryUserStorage implements UserStorage {
         }
         return user;
     }
+
     public List<User> getAllUser() {
         List<User> list = new ArrayList<>(storage.values());
         log.info("The film was get all {}", list);
         return list;
     }
+
     public User getUsersId(Long id) {
         User user = storage.get(id);
         if (user == null) {
