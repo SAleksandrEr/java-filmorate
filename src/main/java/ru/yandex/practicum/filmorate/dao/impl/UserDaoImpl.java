@@ -49,8 +49,8 @@ public class UserDaoImpl implements UserStorage {
         getUsersId(user.getId());
         String sqlQuery = "UPDATE User_filmorate SET email_user = ?, login_user = ?, name_user = ?, birthday_user = ? " +
                 "WHERE user_id = ?";
-        jdbcTemplate.update(sqlQuery, user.getEmail(), user.getLogin(), user.getName()
-                ,Date.valueOf(user.getBirthday()), user.getId());
+        jdbcTemplate.update(sqlQuery, user.getEmail(), user.getLogin(), user.getName(),
+                            Date.valueOf(user.getBirthday()), user.getId());
         return user;
     }
 
