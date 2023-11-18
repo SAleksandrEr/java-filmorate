@@ -86,7 +86,7 @@ public class GenreDaoImpl implements GenreStorage {
             String sqlQuery = "DELETE FROM Genre WHERE film_id = ?";
             return jdbcTemplate.update(sqlQuery, idFilm) > 0;
     }
-    
+
     private Genres makeGenres(ResultSet rs) throws SQLException {
         long id = rs.getInt("genre_id");
         String descriptionGenre = rs.getString("description_genre");
