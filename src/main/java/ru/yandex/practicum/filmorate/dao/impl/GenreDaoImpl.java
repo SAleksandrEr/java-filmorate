@@ -30,7 +30,7 @@ public class GenreDaoImpl implements GenreStorage {
     }
 
     @Override
-    public Genres findGenresId(Long id){
+    public Genres findGenresId(Long id) {
         SqlRowSet genreRows = jdbcTemplate.queryForRowSet("SELECT * FROM Genre_list WHERE generelist_id = ?", id);
         if (genreRows.next()) {
             Long genreId = genreRows.getLong("generelist_id");
@@ -42,7 +42,7 @@ public class GenreDaoImpl implements GenreStorage {
     }
 
     @Override
-    public List<Genres> getFilmGenres(Long idFilm){
+    public List<Genres> getFilmGenres(Long idFilm) {
         String sql = "SELECT DISTINCT genre_id, gl.DESCRIPTION_GENRE FROM Genre AS g INNER JOIN Genre_list AS gl " +
                 "ON g.GENRE_ID = gl.generelist_id WHERE film_id =?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenres(rs), idFilm);
@@ -82,10 +82,11 @@ public class GenreDaoImpl implements GenreStorage {
         return getFilmGenres(idFilm);
     }
 
-    private boolean deleteGenresFilm(Long idFilm){
+    private boolean deleteGenresFilm(Long idFilm) {
             String sqlQuery = "DELETE FROM Genre WHERE film_id = ?";
             return jdbcTemplate.update(sqlQuery, idFilm) > 0;
     }
+    
     private Genres makeGenres(ResultSet rs) throws SQLException {
         long id = rs.getInt("genre_id");
         String descriptionGenre = rs.getString("description_genre");
