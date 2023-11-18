@@ -10,38 +10,44 @@ _Table Film {\
    description_film varchar [note: 'Описание фильма']\
    releaseDate_film date [note: 'Дата выхода фильма']\
    duration_film  integer [note: 'Длительность фильма в минутах']\
-   mpa varchar [note: 'Возрастное ограничение - Motion Picture Association, сокращённо МРА:\
-                G — у фильма нет возрастных ограничений,\
-                PG — детям рекомендуется смотреть фильм с родителями,\
-                PG-13 — детям до 13 лет просмотр не желателен,\
-                R — лицам до 17 лет просматривать фильм можно только в присутствии взрослого,\
-                NC-17 — лицам до 18 лет просмотр запрещён.']\
+   mpa_id integer [ref: - Mpa.mpa_id, note: 'G, PG, PG-13, R, NC-17,\ 
+   id Возрастное ограничение - Motion Picture Association, сокращённо МРА']\
+}_
+#### > Mpa
+_Table Mpa {\
+ mpa_id integer [primary key ]\
+ name_mpa varchar(5) [note: 'G, PG, PG-13, R, NC-17']\
+ duration_mpa varchar [note: 'Motion Picture Association, сокращённо МРА:\
+ G — у фильма нет возрастных ограничений,\
+ PG — детям рекомендуется смотреть фильм с родителями,\
+ PG-13 — детям до 13 лет просмотр не желателен,\
+ c,\
+ NC-17 — лицам до 18 лет просмотр запрещён.']\
 }_
 
 #### > Likes
 
-  _Table Likes {\
-  likes_id integer [primary key, note: 'Id лайка']\
-  user_id integer  [ref: > User.user_id, note: 'Id пользователя кто поставил лайк']\
+_Table Likes {\
+  user_id integer  [ref: > User_filmorate.user_id, note: 'Id пользователя кто поставил лайк']\
   film_id integer [ref: > Film.unit_id, note: 'Id фильма связан с таблицей Film']\
-  }_
+}_
 
 #### > Genre
 
-  _Table Genre {\
- genre_id integer [primary key, ref: > Genre_list.genre_id, note: 'Id жанра фильма связан с таблицей Genre_list']\
+_Table Genre {\
+  genre_id integer [primary key, ref: > Genre_list.genre_id, note: 'Id жанра фильма связан с таблицей Genre_list']\
   film_id integer [ref: > Film.unit_id, note: 'Id фильма связан с таблицей Film']\
 }_
 
 #### > Genre_list
-  _Table Genre_list {\
+_Table Genre_list {\
   genre_id integer [primary key, note: 'Id жанра фильма связан с таблицей Genre']\
   description_genre varchar [note: 'Описание жанра фильма - Комедия, Драма, Триллер, Документальный, Боевик']\
-  }_
+}_
 
 #### > User
 
-  _Table User {\
+_Table User_filmorate {\
   user_id integer [primary key, note: 'Id пользователя']\
   email_user varchar [note: 'email пользователя']\
   login_user varchar [note: 'Логин пользователя']\
@@ -51,10 +57,10 @@ _Table Film {\
 
 #### > Friends
 
-  _Table Friends {\
+_Table Friends {\
   unit_id integer [primary key, note: 'уникальный id пользователя и его друга']\
-  friends_id integer [ref: > User.user_id, note: 'id друга связан с таблицей User']\ 
-  user_id integer [ref: > User.user_id, note: 'id пользователя связан с таблицей User']\
+  friends_id integer [ref: > User_filmorate.user_id, note: 'id друга связан с таблицей User']\ 
+  user_id integer [ref: > User_filmorate.user_id, note: 'id пользователя связан с таблицей User']\
   friendship_status varchar [note: 'Статус дружбы - unconfirmed, confirmed']\
 }_
 
