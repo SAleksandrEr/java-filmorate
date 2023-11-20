@@ -37,7 +37,7 @@ public class GenreDaoImpl implements GenreStorage {
             String nameGenre = genreRows.getString("description_genre");
             return Genres.builder().name(nameGenre).id(genreId).build();
         } else {
-            throw new DataNotFoundException("GenresID");
+            throw new DataNotFoundException("The Genres has not been find with id " + id);
         }
     }
 
@@ -60,7 +60,8 @@ public class GenreDaoImpl implements GenreStorage {
                 return stmt;
             }, keyHolder);
             if (keyHolder.getKey() == null) {
-                throw new DataNotFoundException("FilmID");
+                throw new DataNotFoundException("The Genres for Film has not been add with id " +
+                        idFilm + " - " + genres);
             }
         }
         return getFilmGenres(idFilm);
@@ -68,17 +69,12 @@ public class GenreDaoImpl implements GenreStorage {
 
     @Override
     public List<Genres> updateGenresFilm(List<Genres> genres, Long idFilm) {
-        if (genres.isEmpty()) {
+        if (genres.isEmpty() || !getFilmGenres(idFilm).isEmpty()) {
             deleteGenresFilm(idFilm);
         }
         if (!genres.isEmpty()) {
-            if (getFilmGenres(idFilm).isEmpty()) {
                 createGenresFilm(genres, idFilm);
-            } else {
-                deleteGenresFilm(idFilm);
-                createGenresFilm(genres, idFilm);
-                }
-            }
+        }
         return getFilmGenres(idFilm);
     }
 

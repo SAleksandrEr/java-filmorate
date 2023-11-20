@@ -42,7 +42,7 @@ public class FilmDaoImpl implements FilmStorage {
             if (keyHolder.getKey() != null) {
                 return getFilmsId(Objects.requireNonNull(keyHolder.getKey()).longValue());
             } else {
-                throw new DataNotFoundException("FilmID");
+                throw new DataNotFoundException("The film has not been created " +  film);
             }
         }
 
@@ -67,7 +67,7 @@ public class FilmDaoImpl implements FilmStorage {
         String sql = "SELECT * FROM FILM AS f LEFT JOIN Mpa AS m ON f.mpa_id = m.mpa_id WHERE f.unit_id = ?";
         List<Film> films = jdbcTemplate.query(sql, this::makeFilm,id);
         if (films.size() != 1) {
-            throw new DataNotFoundException("Data not found " + id + films);
+            throw new DataNotFoundException("Data not found " + id + " - " + films);
         }
         return films.get(0);
     }

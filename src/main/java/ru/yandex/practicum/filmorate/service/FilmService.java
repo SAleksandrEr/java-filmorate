@@ -69,9 +69,9 @@ public class FilmService {
     }
 
     public Film createLikeFilm(Long id, Long userId) {
-        findFilmsId(id);
+        Film film = findFilmsId(id);
         userService.findUsersId(userId);
-        Film film = findFilmsId(likesStorage.createLikeFilm(id, userId));
+        likesStorage.createLikeFilm(id, userId);
         log.info("The user liked the movie {} filme - ", film);
         return film;
     }

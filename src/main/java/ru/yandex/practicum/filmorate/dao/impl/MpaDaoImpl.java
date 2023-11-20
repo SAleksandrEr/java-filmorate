@@ -34,7 +34,7 @@ public class MpaDaoImpl implements MpaStorage {
             long mpaId = mpaRows.getInt("mpa_id");
             return Mpa.builder().name(nameMpa).id(mpaId).build();
         } else {
-            throw new DataNotFoundException("MpaID");
+            throw new DataNotFoundException("Mpa not found " + id);
         }
     }
 

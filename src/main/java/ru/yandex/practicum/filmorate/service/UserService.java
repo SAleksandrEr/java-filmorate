@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FriendStorage;
-import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Friend;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
@@ -47,9 +46,6 @@ public class UserService {
     }
 
     public List<Friend> createdFriendsId(Long userId, Long friendId) {
-        if (Objects.equals(userId, friendId)) {
-            throw new DataNotFoundException("UserID");
-        }
         findUsersId(userId);
         findUsersId(friendId);
         List<Friend> friends = friendStorage.createFriendUser(friendId, userId);

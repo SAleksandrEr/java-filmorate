@@ -40,7 +40,7 @@ public class UserDaoImpl implements UserStorage {
         if (keyHolder.getKey() != null) {
             return getUsersId(Objects.requireNonNull(keyHolder.getKey()).longValue());
         } else {
-            throw new DataNotFoundException("UserID");
+            throw new DataNotFoundException("The User has not been add " + user);
         }
     }
 
@@ -66,7 +66,7 @@ public class UserDaoImpl implements UserStorage {
         String sql = "SELECT * FROM User_filmorate WHERE user_id = ?";
         List<User> users = jdbcTemplate.query(sql, this::makeUser,id);
         if (users.size() != 1) {
-            throw new DataNotFoundException("Data not found " + id + users);
+            throw new DataNotFoundException("Data not found " + id + " - " + users);
         }
         return users.get(0);
     }

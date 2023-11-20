@@ -45,7 +45,7 @@ public class FriendDaoImpl implements FriendStorage {
         if (keyHolder.getKey() != null) {
             return getFriendUserId(Objects.requireNonNull(keyHolder.getKey()).longValue());
         } else {
-            throw new DataNotFoundException("FriendID");
+            throw new DataNotFoundException("The Friend has not been add with id " + friendId + " - " + userId);
         }
     }
 

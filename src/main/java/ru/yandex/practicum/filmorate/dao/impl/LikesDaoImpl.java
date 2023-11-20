@@ -32,7 +32,8 @@ public class LikesDaoImpl implements LikesStorage {
     if (jdbcTemplate.update(sqlQuery, filmId, userId) > 0) {
         return true;
         } else {
-            throw new DataNotFoundException("deleteLikeId");
+            throw new DataNotFoundException("The Likes has not been delete for filmId from userId "
+                    + filmId + " - " + userId);
         }
     }
 
@@ -49,7 +50,8 @@ public class LikesDaoImpl implements LikesStorage {
         if (keyHolder.getKey() != null) {
             return Objects.requireNonNull(keyHolder.getKey()).longValue();
         } else {
-            throw new DataNotFoundException("LikesID");
+            throw new DataNotFoundException("The Likes has not been add for filmId from userId "
+                    + filmId + " - " + userId);
         }
     }
 
