@@ -69,13 +69,12 @@ public class LikesDaoImpl implements LikesStorage {
                     public List<Film> extractData(ResultSet rs) throws SQLException, DataAccessException {
                         List<Film> listFilm = new ArrayList<>();
                         Map<Long, Film> mapFilm = new HashMap<>();
-                        Genres genre = new Genres();
-                        Film film = new Film();
+                        Genres genre;
+                        Film film;
                         Film prevFilm = new Film();
                         prevFilm.setId(0L);
                         List<Genres> genresList = new ArrayList<>();
                         while (rs.next()) {
-                            genre = null;
                             long id = rs.getLong("unit_id");
                             String nameFilm = rs.getString("name_film");
                             String description = rs.getString("description_film");
@@ -87,7 +86,7 @@ public class LikesDaoImpl implements LikesStorage {
                             String descriptionGenre = rs.getString("description_genre");
                             if (genreId != 0) {
                                 genre = Genres.builder().name(descriptionGenre).id(genreId).build();
-                                if (id == prevFilm.getId()){
+                                if (id == prevFilm.getId()) {
                                     genresList.add(genre);
                                 } else {
                                     genresList = new ArrayList<>();
@@ -107,7 +106,6 @@ public class LikesDaoImpl implements LikesStorage {
                         listFilm.addAll(mapFilm.values());
                         return listFilm;
                     }
-                }
-                , count);
+                }, count);
     }
 }

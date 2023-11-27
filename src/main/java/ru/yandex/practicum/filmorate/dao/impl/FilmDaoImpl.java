@@ -86,7 +86,7 @@ public class FilmDaoImpl implements FilmStorage {
                             String descriptionGenre = rs.getString("description_genre");
                             if (genreId != 0) {
                                 genre = Genres.builder().name(descriptionGenre).id(genreId).build();
-                                if (id == prevFilm.getId()){
+                                if (id == prevFilm.getId()) {
                                     genresList.add(genre);
                                 } else {
                                     genresList = new ArrayList<>();
@@ -147,8 +147,7 @@ public class FilmDaoImpl implements FilmStorage {
                         listFilm.addAll(mapFilm.values());
                         return listFilm;
                     }
-                }
-                , id);
+                }, id);
         if (Objects.requireNonNull(films).size() != 1) {
             throw new DataNotFoundException("Data not found " + id + films);
         }
