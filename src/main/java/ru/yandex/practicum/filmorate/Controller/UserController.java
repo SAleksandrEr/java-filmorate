@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
+import ru.yandex.practicum.filmorate.model.Friend;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -20,7 +22,7 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@Valid() @RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {
         return userService.createUsers(user);
     }
 
@@ -35,13 +37,16 @@ public class UserController {
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public User createdFriendsId(@PathVariable("id") Long id,
-                                 @PathVariable("friendId") Long friendId) {
+    public List<Friend> createdFriendsId(@Valid @PathVariable("id") Long id,
+                                         @PathVariable("friendId") Long friendId) {
+        if (Objects.equals(id, friendId)) {
+            throw new DataNotFoundException("UserID and FriendId Can't be the same");
+        }
             return userService.createdFriendsId(id,friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public User deleteFriendsId(@PathVariable("id") Long id,
+    public boolean deleteFriendsId(@Valid @PathVariable("id") Long id,
                                 @PathVariable("friendId") Long friendId) {
             return userService.deleteFriendsId(id,friendId);
     }

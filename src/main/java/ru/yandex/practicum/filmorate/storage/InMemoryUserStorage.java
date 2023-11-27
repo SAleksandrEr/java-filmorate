@@ -2,15 +2,16 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dao.UserStorage;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
 
 @Slf4j
-@Component
+@Component("inMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
-    private long generationId = 0;
+    private Long generationId = 0L;
 
     private final Map<Long, User> storage = new HashMap<>();
 
@@ -47,7 +48,7 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    private long generationIdUnit() {
+    private Long generationIdUnit() {
         return ++generationId;
     }
 }

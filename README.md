@@ -152,4 +152,3 @@ _SELECT unit_id,
         genre_id\
 FROM Film\
 WHERE unit_id = {id};_
-

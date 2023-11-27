@@ -2,74 +2,78 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
+import ru.yandex.practicum.filmorate.dao.FriendStorage;
+import ru.yandex.practicum.filmorate.model.Friend;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.dao.UserStorage;
 
 import java.util.*;
 
 @Slf4j
 @Service
 public class UserService {
+
     private final UserStorage userStorage;
 
+    private final FriendStorage friendStorage;
+
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("userDaoImpl") UserStorage userStorage, FriendStorage friendStorage) {
         this.userStorage = userStorage;
+        this.friendStorage = friendStorage;
     }
 
     public User createUsers(User user) {
         validate(user);
-        return userStorage.createUser(user);
+        user = userStorage.createUser(user);
+        log.info("The user was created with ID {}", user.getId());
+        return user;
     }
 
     public User updateUsers(User user) {
         validate(user);
-        return userStorage.updateUser(user);
+        user = userStorage.updateUser(user);
+        log.info("The film was update {}",user);
+        return user;
     }
 
     public List<User> getAllUsers() {
-        return userStorage.getAllUser();
+        List<User> listUser = userStorage.getAllUser();
+        log.info("The all users was get {}", listUser.size());
+        return listUser;
     }
 
-    public User createdFriendsId(Long id, Long friendId) {
-        if (Objects.equals(id, friendId)) {
-            throw new DataNotFoundException("UserID");
+    public List<Friend> createdFriendsId(Long userId, Long friendId) {
+        findUsersId(userId);
+        findUsersId(friendId);
+        List<Friend> friends = friendStorage.createFriendUser(friendId, userId);
+        log.info("Created as a friend {}", friends);
+        return friends;
+    }
+
+    public boolean deleteFriendsId(Long userId, Long friendId) {
+        if (friendStorage.deleteFriendsId(userId, friendId)) {
+            log.info("The user deleted the friend - {}", friendId);
+            return true;
+        } else {
+            return false;
         }
-        User user = userStorage.getUsersId(id);
-        User userFriend = userStorage.getUsersId(friendId);
-        user.setFriends(friendId);
-        userFriend.setFriends(id);
-        log.info("Created as a friend {}", user);
-        return user;
     }
 
-    public User deleteFriendsId(Long id, Long friendId) {
-        User user = userStorage.getUsersId(id);
-        user.removeFriendsId(friendId);
-        log.info("The user deleted the friend - {}", friendId);
-        return user;
-    }
-
-    public List<User> findUsersFriendsId(Long id) {
-        List<User> results = new ArrayList<>();
-        for (Long userList : userStorage.getUsersId(id).getFriends()) {
-            results.add(userStorage.getUsersId(userList));
-        }
-        log.info("We return a list of users who are his friends ID {} ", id);
+    public List<User> findUsersFriendsId(Long userId) {
+        findUsersId(userId);
+        List<User> results = friendStorage.findFriendUserId(userId);
+        log.info("We return a list of users who are his friends ID {} ", userId);
         return results;
     }
 
     public List<User> findUsersOtherId(Long id, Long otherId) {
-        Set<Long> userId = userStorage.getUsersId(id).getFriends();
-        Set<Long> userFriendId = userStorage.getUsersId(otherId).getFriends();
-        userId.retainAll(userFriendId);
-        List<User> results = new ArrayList<>();
-        for (Long userList : userId) {
-            results.add(userStorage.getUsersId(userList));
-        }
-        log.info("Displays a list of friends shared with another user ID {} ", id);
+        findUsersId(id);
+        findUsersId(otherId);
+        List<User> results = friendStorage.findUsersOtherId(id, otherId);
+        log.info("Displays a list of friends shared with another user ID {} ", id + " и " + otherId);
         return results;
     }
 

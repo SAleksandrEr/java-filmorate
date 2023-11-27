@@ -5,11 +5,14 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import javax.validation.constraints.NotBlank;
+
+@EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
-@EqualsAndHashCode(of = {"id"})
-@NoArgsConstructor
-public abstract class Unit {
+@NoArgsConstructor(force = true)
+public class Mpa extends Unit {
 
-    private Long id;
+    @NotBlank
+    private String name;
 }

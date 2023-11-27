@@ -1,15 +1,18 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 
 @Data
 @SuperBuilder
-@EqualsAndHashCode(of = {"id"})
-@NoArgsConstructor
-public abstract class Unit {
+@NoArgsConstructor(force = true)
+public class Likes {
 
-    private Long id;
+    @NonNull
+    private Long userId;
+
+    @NonNull
+    private Long filmId;
 }
