@@ -8,11 +8,9 @@ import ru.yandex.practicum.filmorate.dao.LikesStorage;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
-import ru.yandex.practicum.filmorate.model.Genres;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -39,16 +37,15 @@ public class FilmService {
     public Film createFilms(Film film) {
         validate(film);
         Film filmCurrant = filmStorage.createFilm(film);
-        filmCurrant.setGenres(genreService.createGenresFilm(film.getGenres(), filmCurrant.getId()));
+        genreService.createGenresFilm(film.getGenres(), filmCurrant.getId());
         log.info("The film was created with ID {}", filmCurrant.getId());
-        return filmCurrant;
+        return filmStorage.getFilmsId(filmCurrant.getId());
     }
 
     public Film updateFilms(Film film) {
         validate(film);
-        filmStorage.updateFilm(film);
         genreService.updateGenresFilm(film.getGenres(), film.getId());
-        film = findFilmsId(film.getId());
+        film = filmStorage.updateFilm(film);
         log.info("The film was update {}",film.getId());
         return film;
     }
@@ -56,14 +53,11 @@ public class FilmService {
     public List<Film> getAllFilms() {
         List<Film> film = filmStorage.getAllFilm();
         log.info("The all films was get {}", film.size());
-        return film.stream().peek(filmCurrent -> filmCurrent.setGenres(genreService.getFilmGenres(filmCurrent.getId())))
-            .collect(Collectors.toList());
+        return film;
     }
 
     public Film findFilmsId(Long id) {
         Film film = filmStorage.getFilmsId(id);
-        List<Genres> genres = genreService.getFilmGenres(id);
-        film.setGenres(genres);
         log.info("The film was get of ID {} ", film);
         return film;
     }

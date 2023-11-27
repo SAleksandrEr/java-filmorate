@@ -1,12 +1,15 @@
 package ru.yandex.practicum.filmorate.dao.impl;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.Date;
@@ -58,30 +61,96 @@ public class FilmDaoImpl implements FilmStorage {
 
     @Override
     public List<Film> getAllFilm() {
-        String sql = "SELECT * FROM FILM AS f LEFT JOIN Mpa AS m ON f.mpa_id = m.mpa_id";
-        return jdbcTemplate.query(sql, this::makeFilm);
+        String sql = "SELECT DISTINCT * FROM FILM AS f " +
+                "LEFT JOIN Mpa AS m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN Genre AS g ON f.unit_id = g.film_id " +
+                "LEFT JOIN Genre_list AS gl ON g.genre_id = gl.generelist_id";
+        return jdbcTemplate.query(sql, new ResultSetExtractor<List<Film>>() {
+                    public List<Film> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                        List<Film> listFilm = new ArrayList<>();
+                        Map<Long, Film> mapFilm = new HashMap<>();
+                        Genres genre;
+                        Film film;
+                        Film prevFilm = new Film();
+                        prevFilm.setId(0L);
+                        List<Genres> genresList = new ArrayList<>();
+                        while (rs.next()) {
+                            long id = rs.getLong("unit_id");
+                            String nameFilm = rs.getString("name_film");
+                            String description = rs.getString("description_film");
+                            Integer durationFilm = rs.getInt("duration_film");
+                            LocalDate releaseDateFilm = rs.getDate("releaseDate_film").toLocalDate();
+                            long mpaId = rs.getLong("mpa_id");
+                            String nameMpa = rs.getString("name_mpa");
+                            long genreId = rs.getInt("genre_id");
+                            String descriptionGenre = rs.getString("description_genre");
+                            if (genreId != 0) {
+                                genre = Genres.builder().name(descriptionGenre).id(genreId).build();
+                                if (id == prevFilm.getId()) {
+                                    genresList.add(genre);
+                                } else {
+                                    genresList = new ArrayList<>();
+                                    genresList.add(genre);
+                                }
+                                film = Film.builder().name(nameFilm).description(description)
+                                        .releaseDate(releaseDateFilm).duration(durationFilm)
+                                        .mpa(Mpa.builder().name(nameMpa).id(mpaId).build()).genres(genresList).id(id).build();
+                            } else {
+                                film = Film.builder().name(nameFilm).description(description)
+                                        .releaseDate(releaseDateFilm).duration(durationFilm)
+                                        .mpa(Mpa.builder().name(nameMpa).id(mpaId).build()).genres(new ArrayList<>()).id(id).build();
+                            }
+                            prevFilm = film;
+                            mapFilm.put(id, film);
+                        }
+                        listFilm.addAll(mapFilm.values());
+                        return listFilm;
+                    }
+                }
+        );
     }
 
     @Override
     public Film getFilmsId(Long id) {
-        String sql = "SELECT * FROM FILM AS f LEFT JOIN Mpa AS m ON f.mpa_id = m.mpa_id WHERE f.unit_id = ?";
-        List<Film> films = jdbcTemplate.query(sql, this::makeFilm,id);
-        if (films.size() != 1) {
-            throw new DataNotFoundException("Data not found " + id + " - " + films);
+        String sql = "SELECT DISTINCT * FROM FILM AS f " +
+                "LEFT JOIN Mpa AS m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN Genre AS g ON f.unit_id = g.film_id " +
+                "LEFT JOIN Genre_list AS gl ON g.genre_id = gl.generelist_id " +
+                "WHERE f.unit_id = ?";
+        List<Film> films = jdbcTemplate.query(sql, new ResultSetExtractor<List<Film>>() {
+                    public List<Film> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                        List<Film> listFilm = new ArrayList<>();
+                        LinkedList<Genres> genresList = new LinkedList<>();
+                        Film film;
+                        Genres genre;
+                        Map<Long, Film> mapFilm = new HashMap<>();
+                        while (rs.next()) {
+                            long id = rs.getLong("unit_id");
+                            String nameFilm = rs.getString("name_film");
+                            String description = rs.getString("description_film");
+                            Integer durationFilm = rs.getInt("duration_film");
+                            LocalDate releaseDateFilm = rs.getDate("releaseDate_film").toLocalDate();
+                            long mpaId = rs.getLong("mpa_id");
+                            String nameMpa = rs.getString("name_mpa");
+                            long genreId = rs.getInt("genre_id");
+                            String descriptionGenre = rs.getString("description_genre");
+                            if (genreId != 0) {
+                                genre = Genres.builder().name(descriptionGenre).id(genreId).build();
+                                genresList.add(genre);
+                            }
+                            film = Film.builder().name(nameFilm).description(description)
+                                    .releaseDate(releaseDateFilm).duration(durationFilm)
+                                    .mpa(Mpa.builder().name(nameMpa).id(mpaId).build()).genres(genresList).id(id).build();
+
+                            mapFilm.put(id, film);
+                        }
+                        listFilm.addAll(mapFilm.values());
+                        return listFilm;
+                    }
+                }, id);
+        if (Objects.requireNonNull(films).size() != 1) {
+            throw new DataNotFoundException("Data not found " + id + films);
         }
         return films.get(0);
-    }
-
-    private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
-        long id = rs.getLong("unit_id");
-        String nameFilm = rs.getString("name_film");
-        String description = rs.getString("description_film");
-        Integer durationFilm = rs.getInt("duration_film");
-        LocalDate releaseDateFilm = rs.getDate("releaseDate_film").toLocalDate();
-        long mpaId = rs.getLong("mpa_id");
-        String nameMpa = rs.getString("name_mpa");
-        return Film.builder().name(nameFilm).description(description)
-                .releaseDate(releaseDateFilm).duration(durationFilm)
-                .mpa(Mpa.builder().name(nameMpa).id(mpaId).build()).genres(new ArrayList<>()).id(id).build();
     }
 }
