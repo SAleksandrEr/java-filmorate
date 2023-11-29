@@ -44,19 +44,19 @@ CREATE TABLE IF NOT EXISTS Friends (
   friendship_status BOOLEAN NOT NULL default false
 );
 
-ALTER TABLE Film ADD FOREIGN KEY (mpa_id) REFERENCES Mpa (mpa_id);
+ALTER TABLE Film ADD FOREIGN KEY (mpa_id) REFERENCES Mpa (mpa_id) ON DELETE CASCADE;
 
-ALTER TABLE Likes ADD FOREIGN KEY (user_id) REFERENCES User_filmorate (user_id);
+ALTER TABLE Likes ADD FOREIGN KEY (user_id) REFERENCES User_filmorate (user_id) ON DELETE CASCADE;
 
-ALTER TABLE Likes ADD FOREIGN KEY (film_id) REFERENCES Film (unit_id);
+ALTER TABLE Likes ADD FOREIGN KEY (film_id) REFERENCES Film (unit_id) ON DELETE CASCADE;
 
-ALTER TABLE Genre ADD FOREIGN KEY (genre_id) REFERENCES Genre_list (generelist_id);
+ALTER TABLE Genre ADD FOREIGN KEY (genre_id) REFERENCES Genre_list (generelist_id) ON DELETE CASCADE;
 
-ALTER TABLE Genre ADD FOREIGN KEY (film_id) REFERENCES Film (unit_id);
+ALTER TABLE Genre ADD FOREIGN KEY (film_id) REFERENCES Film (unit_id) ON DELETE CASCADE;
 
-ALTER TABLE Friends ADD FOREIGN KEY (friends_id) REFERENCES User_filmorate (user_id);
+ALTER TABLE Friends ADD FOREIGN KEY (friends_id) REFERENCES User_filmorate (user_id) ON DELETE CASCADE;
 
-ALTER TABLE Friends ADD FOREIGN KEY (user_id) REFERENCES User_filmorate (user_id);
+ALTER TABLE Friends ADD FOREIGN KEY (user_id) REFERENCES User_filmorate (user_id) ON DELETE CASCADE;
 
 CREATE UNIQUE INDEX IF NOT EXISTS user_filmorate_id_uindex ON User_filmorate (user_id);
 
