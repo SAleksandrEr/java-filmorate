@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.Controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
@@ -11,6 +12,7 @@ import javax.validation.Valid;
 import java.util.*;
 
 @RestController
+@Slf4j
 @RequestMapping("/users")
 public class UserController {
 
@@ -65,5 +67,11 @@ public class UserController {
     @GetMapping("/{id}")
     public User findUsersId(@PathVariable("id") Long id) {
             return userService.findUsersId(id);
+    }
+
+    @DeleteMapping("/{id}") //удаление пользователя по id
+    public void userDeleteById(@PathVariable("id") Long id) {
+        log.info("вызван метод deleteUser - запрос на удаление пользователя с id " + id);
+        userService.userDeleteById(id);
     }
 }

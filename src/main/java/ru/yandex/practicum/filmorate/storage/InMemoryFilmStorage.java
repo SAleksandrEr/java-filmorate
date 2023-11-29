@@ -55,6 +55,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         return film;
     }
 
+    @Override
+    public void filmDeleteById(Long filmId) {
+
+    }
+
     private Long generationIdUnit() {
         return ++generationId;
     }

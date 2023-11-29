@@ -89,4 +89,11 @@ public class FilmService {
             throw new ValidationException("Invalid date" + data);
         }
     }
+
+    public void filmDeleteById(Long filmId) { //метод удаления фильма по id
+        if (filmStorage.getFilmsId(filmId) == null) {
+            throw new ValidationException("Фильма такого нету((");
+        }
+        filmStorage.filmDeleteById(filmId);
+    }
 }
