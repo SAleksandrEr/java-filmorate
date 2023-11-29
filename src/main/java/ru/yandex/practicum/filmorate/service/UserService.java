@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FriendStorage;
+import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Friend;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
@@ -92,7 +93,7 @@ public class UserService {
 
     public void userDeleteById(Long id) { //метод удаления пользователя по id
         if (userStorage.getUsersId(id) == null) {
-            throw new NotFoundException("Такого пользователя не существует");
+            throw new DataNotFoundException("Такого пользователя не существует");
         }
         userStorage.deleteUserById(id);
     }
