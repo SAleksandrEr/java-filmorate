@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.Date;
@@ -89,7 +88,7 @@ public class UserDaoImpl implements UserStorage {
             jdbcTemplate.update("DELETE FROM USER_FILMORATE WHERE USER_ID=?", id);
             jdbcTemplate.update("DELETE FROM Friends WHERE friends_id=? or user_id=?", id, id);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("не верный id пользователя ");
+            throw new DataNotFoundException("не верный id пользователя ");
         }
     }
 }

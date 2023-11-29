@@ -8,7 +8,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -166,7 +165,7 @@ public class FilmDaoImpl implements FilmStorage {
         try {
             jdbcTemplate.update(sqlQuery, id);
         } catch (RuntimeException e) {
-            throw new NotFoundException("Фильм не найден");
+            throw new DataNotFoundException("Фильм не найден");
         }
     }
 }
