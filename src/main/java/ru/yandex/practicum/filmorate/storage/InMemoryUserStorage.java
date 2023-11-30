@@ -48,6 +48,11 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
+    @Override
+    public void deleteUserById(Long id) {
+
+    }
+
     private Long generationIdUnit() {
         return ++generationId;
     }

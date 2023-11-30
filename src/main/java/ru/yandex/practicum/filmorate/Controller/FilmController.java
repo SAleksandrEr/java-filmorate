@@ -59,4 +59,9 @@ public class FilmController {
             throw new ValidationException("Введенные данные не корректны " + count);
         }
     }
+
+    @DeleteMapping("/{id}") //удаление фильма по id
+    public void filmDeleteById(@PathVariable("id") Long filmId) {
+        filmService.filmDeleteById(filmId);
+    }
 }

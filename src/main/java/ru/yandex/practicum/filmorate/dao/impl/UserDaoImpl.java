@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao.impl;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -79,5 +80,15 @@ public class UserDaoImpl implements UserStorage {
         LocalDate birthdayUser = rs.getDate("birthday_user").toLocalDate();
         return User.builder().email(emailUser).login(loginUser)
                 .name(nameUser).birthday(birthdayUser).id(id).build();
+    }
+
+    @Override
+    public void deleteUserById(Long id) {
+        try {
+            jdbcTemplate.update("DELETE FROM USER_FILMORATE WHERE USER_ID=?", id);
+            jdbcTemplate.update("DELETE FROM Friends WHERE friends_id=? or user_id=?", id, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new DataNotFoundException("не верный id пользователя ");
+        }
     }
 }

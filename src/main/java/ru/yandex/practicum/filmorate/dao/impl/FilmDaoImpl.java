@@ -17,7 +17,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Component("filmDaoImpl")
 public class FilmDaoImpl implements FilmStorage {
@@ -32,30 +37,30 @@ public class FilmDaoImpl implements FilmStorage {
     public Film createFilm(Film film) {
         String sqlQuery = "INSERT INTO public.Film (name_film, description_film, " +
                 "releaseDate_film, duration_film, mpa_id) VALUES (?, ?, ?, ?, ?)";
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(connection -> {
-                PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"unit_id"});
-                stmt.setString(1,film.getName());
-                stmt.setString(2, film.getDescription());
-                stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
-                stmt.setInt(4, film.getDuration());
-                stmt.setLong(5,film.getMpa().getId());
-                return stmt;
-            }, keyHolder);
-            if (keyHolder.getKey() != null) {
-                return getFilmsId(Objects.requireNonNull(keyHolder.getKey()).longValue());
-            } else {
-                throw new DataNotFoundException("The film has not been created " +  film);
-            }
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"unit_id"});
+            stmt.setString(1, film.getName());
+            stmt.setString(2, film.getDescription());
+            stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
+            stmt.setInt(4, film.getDuration());
+            stmt.setLong(5, film.getMpa().getId());
+            return stmt;
+        }, keyHolder);
+        if (keyHolder.getKey() != null) {
+            return getFilmsId(Objects.requireNonNull(keyHolder.getKey()).longValue());
+        } else {
+            throw new DataNotFoundException("The film has not been created " + film);
         }
+    }
 
     @Override
     public Film updateFilm(Film film) {
-           getFilmsId(film.getId());
-           String sqlQuery = "UPDATE Film SET NAME_FILM = ?, DESCRIPTION_FILM = ?, " +
-                   "RELEASEDATE_FILM = ?, DURATION_FILM = ?, MPA_ID = ? WHERE UNIT_ID = ?";
-           jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
-                               film.getDuration(), film.getMpa().getId(), film.getId());
+        getFilmsId(film.getId());
+        String sqlQuery = "UPDATE Film SET NAME_FILM = ?, DESCRIPTION_FILM = ?, " +
+                "RELEASEDATE_FILM = ?, DURATION_FILM = ?, MPA_ID = ? WHERE UNIT_ID = ?";
+        jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
+                film.getDuration(), film.getMpa().getId(), film.getId());
         return getFilmsId(film.getId());
     }
 
@@ -118,39 +123,49 @@ public class FilmDaoImpl implements FilmStorage {
                 "LEFT JOIN Genre_list AS gl ON g.genre_id = gl.generelist_id " +
                 "WHERE f.unit_id = ?";
         List<Film> films = jdbcTemplate.query(sql, new ResultSetExtractor<List<Film>>() {
-                    public List<Film> extractData(ResultSet rs) throws SQLException, DataAccessException {
-                        List<Film> listFilm = new ArrayList<>();
-                        LinkedList<Genres> genresList = new LinkedList<>();
-                        Film film;
-                        Genres genre;
-                        Map<Long, Film> mapFilm = new HashMap<>();
-                        while (rs.next()) {
-                            long id = rs.getLong("unit_id");
-                            String nameFilm = rs.getString("name_film");
-                            String description = rs.getString("description_film");
-                            Integer durationFilm = rs.getInt("duration_film");
-                            LocalDate releaseDateFilm = rs.getDate("releaseDate_film").toLocalDate();
-                            long mpaId = rs.getLong("mpa_id");
-                            String nameMpa = rs.getString("name_mpa");
-                            long genreId = rs.getInt("genre_id");
-                            String descriptionGenre = rs.getString("description_genre");
-                            if (genreId != 0) {
-                                genre = Genres.builder().name(descriptionGenre).id(genreId).build();
-                                genresList.add(genre);
-                            }
-                            film = Film.builder().name(nameFilm).description(description)
-                                    .releaseDate(releaseDateFilm).duration(durationFilm)
-                                    .mpa(Mpa.builder().name(nameMpa).id(mpaId).build()).genres(genresList).id(id).build();
-
-                            mapFilm.put(id, film);
-                        }
-                        listFilm.addAll(mapFilm.values());
-                        return listFilm;
+            public List<Film> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                List<Film> listFilm = new ArrayList<>();
+                LinkedList<Genres> genresList = new LinkedList<>();
+                Film film;
+                Genres genre;
+                Map<Long, Film> mapFilm = new HashMap<>();
+                while (rs.next()) {
+                    long id = rs.getLong("unit_id");
+                    String nameFilm = rs.getString("name_film");
+                    String description = rs.getString("description_film");
+                    Integer durationFilm = rs.getInt("duration_film");
+                    LocalDate releaseDateFilm = rs.getDate("releaseDate_film").toLocalDate();
+                    long mpaId = rs.getLong("mpa_id");
+                    String nameMpa = rs.getString("name_mpa");
+                    long genreId = rs.getInt("genre_id");
+                    String descriptionGenre = rs.getString("description_genre");
+                    if (genreId != 0) {
+                        genre = Genres.builder().name(descriptionGenre).id(genreId).build();
+                        genresList.add(genre);
                     }
-                }, id);
+                    film = Film.builder().name(nameFilm).description(description)
+                            .releaseDate(releaseDateFilm).duration(durationFilm)
+                            .mpa(Mpa.builder().name(nameMpa).id(mpaId).build()).genres(genresList).id(id).build();
+
+                    mapFilm.put(id, film);
+                }
+                listFilm.addAll(mapFilm.values());
+                return listFilm;
+            }
+        }, id);
         if (Objects.requireNonNull(films).size() != 1) {
             throw new DataNotFoundException("Data not found " + id + films);
         }
         return films.get(0);
+    }
+
+    @Override
+    public void filmDeleteById(Long id) {
+        String sqlQuery = "DELETE FROM Film WHERE unit_id=?";
+        try {
+            jdbcTemplate.update(sqlQuery, id);
+        } catch (RuntimeException e) {
+            throw new DataNotFoundException("Фильм не найден");
+        }
     }
 }

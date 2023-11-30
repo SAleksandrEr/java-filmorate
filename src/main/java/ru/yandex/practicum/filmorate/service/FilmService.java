@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.LikesStorage;
+import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
@@ -88,5 +89,12 @@ public class FilmService {
             log.warn("The film date is not correct {} ",data.getReleaseDate());
             throw new ValidationException("Invalid date" + data);
         }
+    }
+
+    public void filmDeleteById(Long filmId) { //метод удаления фильма по id
+        if (filmStorage.getFilmsId(filmId) == null) {
+            throw new DataNotFoundException("Фильм с такой айди не существует");
+        }
+        filmStorage.filmDeleteById(filmId);
     }
 }
