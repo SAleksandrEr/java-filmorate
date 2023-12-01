@@ -64,4 +64,13 @@ public class FilmController {
     public void filmDeleteById(@PathVariable("id") Long filmId) {
         filmService.filmDeleteById(filmId);
     }
+
+    @GetMapping("/search")
+    public List<Film> searchNameFilmsAndDirectors(@RequestParam(value = "query", required = false) String query,
+                                                  @RequestParam(value = "by", defaultValue = "title", required = false) List<String> by) {
+        if ((by.size() > 2)) {
+            throw new ValidationException("Введенные данные не корректны " + by);
+          }
+        return filmService.searchNameFilmsAndDirectors(query, by);
+    }
 }

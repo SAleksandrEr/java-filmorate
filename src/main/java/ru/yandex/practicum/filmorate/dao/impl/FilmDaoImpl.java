@@ -17,12 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Component("filmDaoImpl")
 public class FilmDaoImpl implements FilmStorage {
@@ -123,36 +118,36 @@ public class FilmDaoImpl implements FilmStorage {
                 "LEFT JOIN Genre_list AS gl ON g.genre_id = gl.generelist_id " +
                 "WHERE f.unit_id = ?";
         List<Film> films = jdbcTemplate.query(sql, new ResultSetExtractor<List<Film>>() {
-            public List<Film> extractData(ResultSet rs) throws SQLException, DataAccessException {
-                List<Film> listFilm = new ArrayList<>();
-                LinkedList<Genres> genresList = new LinkedList<>();
-                Film film;
-                Genres genre;
-                Map<Long, Film> mapFilm = new HashMap<>();
-                while (rs.next()) {
-                    long id = rs.getLong("unit_id");
-                    String nameFilm = rs.getString("name_film");
-                    String description = rs.getString("description_film");
-                    Integer durationFilm = rs.getInt("duration_film");
-                    LocalDate releaseDateFilm = rs.getDate("releaseDate_film").toLocalDate();
-                    long mpaId = rs.getLong("mpa_id");
-                    String nameMpa = rs.getString("name_mpa");
-                    long genreId = rs.getInt("genre_id");
-                    String descriptionGenre = rs.getString("description_genre");
-                    if (genreId != 0) {
-                        genre = Genres.builder().name(descriptionGenre).id(genreId).build();
-                        genresList.add(genre);
-                    }
-                    film = Film.builder().name(nameFilm).description(description)
-                            .releaseDate(releaseDateFilm).duration(durationFilm)
-                            .mpa(Mpa.builder().name(nameMpa).id(mpaId).build()).genres(genresList).id(id).build();
+                    public List<Film> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                        List<Film> listFilm = new ArrayList<>();
+                        List<Genres> genresList = new ArrayList<>();
+                        Film film;
+                        Genres genre;
+                        Map<Long, Film> mapFilm = new HashMap<>();
+                        while (rs.next()) {
+                            long id = rs.getLong("unit_id");
+                            String nameFilm = rs.getString("name_film");
+                            String description = rs.getString("description_film");
+                            Integer durationFilm = rs.getInt("duration_film");
+                            LocalDate releaseDateFilm = rs.getDate("releaseDate_film").toLocalDate();
+                            long mpaId = rs.getLong("mpa_id");
+                            String nameMpa = rs.getString("name_mpa");
+                            long genreId = rs.getInt("genre_id");
+                            String descriptionGenre = rs.getString("description_genre");
+                            if (genreId != 0) {
+                                genre = Genres.builder().name(descriptionGenre).id(genreId).build();
+                                genresList.add(genre);
+                            }
+                            film = Film.builder().name(nameFilm).description(description)
+                                    .releaseDate(releaseDateFilm).duration(durationFilm)
+                                    .mpa(Mpa.builder().name(nameMpa).id(mpaId).build()).genres(genresList).id(id).build();
 
-                    mapFilm.put(id, film);
-                }
-                listFilm.addAll(mapFilm.values());
-                return listFilm;
-            }
-        }, id);
+                            mapFilm.put(id, film);
+                        }
+                        listFilm.addAll(mapFilm.values());
+                        return listFilm;
+                    }
+                }, id);
         if (Objects.requireNonNull(films).size() != 1) {
             throw new DataNotFoundException("Data not found " + id + films);
         }
@@ -167,5 +162,71 @@ public class FilmDaoImpl implements FilmStorage {
         } catch (RuntimeException e) {
             throw new DataNotFoundException("Фильм не найден");
         }
+    }
+
+    @Override
+   public List<Film> searchNameFilmsAndDirectors(String query, List<String> by) {
+        String queryTitle = "%_%";
+        String queryDirector = "%_%";
+        if (!(query == null)) {
+            for (String s : by) {
+                if (Objects.equals(s, "title")) {
+                    queryTitle = "%" + query.toLowerCase() + "%";
+                }
+                if (Objects.equals(s, "director")) {
+                    queryDirector = "%" + query.toLowerCase() + "%";
+                }
+            }
+        }
+        String sql = "SELECT * FROM (SELECT l.film_id, COUNT(l.user_id) AS noun " +
+                "FROM Likes AS l " +
+                "GROUP BY l.film_id) AS film_lik " +
+                "RIGHT JOIN Film AS f ON f.unit_id = film_lik.film_id " +
+                "LEFT JOIN Mpa AS m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN Genre AS g ON f.unit_id = g.film_id " +
+                "LEFT JOIN Genre_list AS gl ON g.genre_id = gl.generelist_id " +
+                "WHERE (LOWER(f.name_film) LIKE ? " +
+                "OR LOWER(gl.DESCRIPTION_GENRE) LIKE ?) " +
+                "ORDER BY noun DESC";
+        return jdbcTemplate.query(sql, new ResultSetExtractor<List<Film>>() {
+                    public List<Film> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                        List<Film> listFilm = new ArrayList<>();
+                        Genres genre;
+                        Film film;
+                        Film prevFilm = new Film();
+                        prevFilm.setId(0L);
+                        List<Genres> genresList = new ArrayList<>();
+                        while (rs.next()) {
+                            long id = rs.getLong("unit_id");
+                            String nameFilm = rs.getString("name_film");
+                            String description = rs.getString("description_film");
+                            Integer durationFilm = rs.getInt("duration_film");
+                            LocalDate releaseDateFilm = rs.getDate("releaseDate_film").toLocalDate();
+                            long mpaId = rs.getLong("mpa_id");
+                            String nameMpa = rs.getString("name_mpa");
+                            long genreId = rs.getInt("genre_id");
+                            String descriptionGenre = rs.getString("description_genre");
+                            if (genreId != 0) {
+                                genre = Genres.builder().name(descriptionGenre).id(genreId).build();
+                                if (id == prevFilm.getId()) {
+                                    genresList.add(genre);
+                                } else {
+                                    genresList = new ArrayList<>();
+                                    genresList.add(genre);
+                                }
+                                film = Film.builder().name(nameFilm).description(description)
+                                        .releaseDate(releaseDateFilm).duration(durationFilm)
+                                        .mpa(Mpa.builder().name(nameMpa).id(mpaId).build()).genres(genresList).id(id).build();
+                            } else {
+                                film = Film.builder().name(nameFilm).description(description)
+                                        .releaseDate(releaseDateFilm).duration(durationFilm)
+                                        .mpa(Mpa.builder().name(nameMpa).id(mpaId).build()).genres(new ArrayList<>()).id(id).build();
+                            }
+                            prevFilm = film;
+                            listFilm.add(film);
+                        }
+                        return listFilm;
+                    }
+                }, queryTitle, queryDirector);
     }
 }

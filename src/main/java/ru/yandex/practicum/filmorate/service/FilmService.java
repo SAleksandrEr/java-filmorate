@@ -97,4 +97,9 @@ public class FilmService {
         }
         filmStorage.filmDeleteById(filmId);
     }
+
+    public List<Film> searchNameFilmsAndDirectors(String query, List<String> by) {
+        log.info("Returns a list of the movies by query {} ", query + " from " + by);
+        return filmStorage.searchNameFilmsAndDirectors(query, by);
+    }
 }
