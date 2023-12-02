@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.model.Directors;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
