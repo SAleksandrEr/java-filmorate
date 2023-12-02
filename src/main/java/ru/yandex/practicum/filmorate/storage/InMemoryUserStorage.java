@@ -10,6 +10,7 @@ import java.util.*;
 
 @Slf4j
 @Component("inMemoryUserStorage")
+@Deprecated
 public class InMemoryUserStorage implements UserStorage {
     private Long generationId = 0L;
 
