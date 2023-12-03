@@ -11,8 +11,6 @@ import ru.yandex.practicum.filmorate.model.Directors;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.service.DirectorService;
-import ru.yandex.practicum.filmorate.service.GenreService;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -25,14 +23,8 @@ public class FilmDaoImpl implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final GenreService genreService;
-
-    private final DirectorService directorService;
-
-    public FilmDaoImpl(JdbcTemplate jdbcTemplate, GenreService genreService, DirectorService directorService) {
+    public FilmDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.genreService = genreService;
-        this.directorService = directorService;
     }
 
     @Override
@@ -63,8 +55,6 @@ public class FilmDaoImpl implements FilmStorage {
                 "RELEASEDATE_FILM = ?, DURATION_FILM = ?, MPA_ID = ? WHERE UNIT_ID = ?";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
                 film.getDuration(), film.getMpa().getId(), film.getId());
-        genreService.createGenresFilm(film.getGenres(), film.getId());
-        directorService.createDirectorsFilm(film.getDirectors(), film.getId());
         return getFilmsId(film.getId());
     }
 
@@ -198,4 +188,42 @@ public class FilmDaoImpl implements FilmStorage {
         return resultSetExtractor.extractData(rs);
     }
 
+    @Override
+   public List<Film> searchNameFilmsAndDirectors(String query, List<String> by) {
+        String queryTitle = "";
+        String queryDirector = "";
+        if (!(query == null)) {
+            for (String s : by) {
+                if (Objects.equals(s, "title")) {
+                    queryTitle = "%" + query.toLowerCase() + "%";
+                }
+                if (Objects.equals(s, "director")) {
+                    queryDirector = "%" + query.toLowerCase() + "%";
+                }
+            }
+        }
+        String sql = "SELECT DISTINCT * FROM (SELECT l.film_id, COUNT(l.user_id) AS noun " +
+                "FROM Likes AS l " +
+                "GROUP BY l.film_id) AS film_lik " +
+                "RIGHT JOIN Film AS f ON f.unit_id = film_lik.film_id " +
+                "LEFT JOIN Mpa AS m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN Genre AS g ON f.unit_id = g.film_id " +
+                "LEFT JOIN Genre_list AS gl ON g.genre_id = gl.generelist_id " +
+                "LEFT JOIN Film_director AS fd ON f.unit_id = fd.film_id " +
+                "LEFT JOIN Directors AS d ON fd.director_id = d.director_id " +
+                "WHERE LOWER(f.name_film) LIKE ? " +
+                "UNION " +
+                "SELECT DISTINCT * FROM (SELECT l.film_id, COUNT(l.user_id) AS noun " +
+                "FROM Likes AS l " +
+                "GROUP BY l.film_id) AS film_lik " +
+                "RIGHT JOIN Film AS f ON f.unit_id = film_lik.film_id " +
+                "LEFT JOIN Mpa AS m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN Genre AS g ON f.unit_id = g.film_id " +
+                "LEFT JOIN Genre_list AS gl ON g.genre_id = gl.generelist_id " +
+                "LEFT JOIN Film_director AS fd ON f.unit_id = fd.film_id " +
+                "LEFT JOIN Directors AS d ON fd.director_id = d.director_id " +
+                "WHERE LOWER(d.name_director) LIKE ? " +
+                "ORDER BY noun DESC";
+        return jdbcTemplate.query(sql, this::createsFilm, queryTitle, queryDirector);
+    }
 }
