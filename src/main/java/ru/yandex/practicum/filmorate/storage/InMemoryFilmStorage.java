@@ -12,6 +12,7 @@ import java.util.Map;
 
 @Slf4j
 @Component("inMemoryFilmStorage")
+@Deprecated
 public class InMemoryFilmStorage implements FilmStorage {
 
     private Long generationId = 0L;
@@ -57,7 +58,11 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void filmDeleteById(Long filmId) {
+    }
 
+    @Override
+    public List<Film> getFilmsByDirectorId(Long id, String sortBy) {
+        return new ArrayList<>();
     }
 
     private Long generationIdUnit() {
