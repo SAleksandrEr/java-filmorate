@@ -3,27 +3,27 @@ package ru.yandex.practicum.filmorate.dao;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.dao.impl.FilmDaoImpl;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@JdbcTest
+@SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-
+@AutoConfigureTestDatabase
 class FilmDaoTest {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final FilmDaoImpl filmStorage;
 
     @Test
     public void getFilmsAndCreateTest() {
-        FilmStorage filmStorage = new FilmDaoImpl(jdbcTemplate);
         Film film = Film.builder()
                 .name("Test1")
                 .description("description")
@@ -39,7 +39,6 @@ class FilmDaoTest {
 
     @Test
     public void updateFilmTest() {
-        FilmStorage filmStorage = new FilmDaoImpl(jdbcTemplate);
         Film film = Film.builder()
                  .name("Test1")
                  .description("description")
@@ -47,6 +46,7 @@ class FilmDaoTest {
                  .duration(120)
                  .mpa(Mpa.builder().name("G").id(1L).build())
                  .genres(new ArrayList<>())
+                .directors(new ArrayList<>())
                  .build();
         film = filmStorage.createFilm(film);
         Film newfilm = Film.builder()
@@ -55,8 +55,10 @@ class FilmDaoTest {
                       .releaseDate(LocalDate.of(2015, 9, 21))
                       .duration(120)
                       .mpa(Mpa.builder().name("G").id(1L).build())
-                      .genres(new ArrayList<>()).id(film.getId())
-                      .build();
+                      .genres(new ArrayList<>())
+                .id(film.getId())
+                .directors(new ArrayList<>())
+                .build();
         Film updateFilm = filmStorage.updateFilm(newfilm);
         assertThat(updateFilm).isNotNull().usingRecursiveComparison().comparingOnlyFields(String.valueOf(film.getId()))
                   .isEqualTo(film);
@@ -64,7 +66,6 @@ class FilmDaoTest {
 
         @Test
     public void getAllFilmTset() {
-        FilmStorage filmStorage = new FilmDaoImpl(jdbcTemplate);
         Film film1 = Film.builder()
                 .name("Test1")
                 .description("description")
