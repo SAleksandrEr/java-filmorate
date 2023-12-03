@@ -46,4 +46,16 @@ public class DirectorService {
         log.info("The director was delete of ID {}", id);
         directorStorage.deleteDirector(id);
     }
+
+    public List<Directors> createDirectorsFilm(List<Directors> director, Long idFilm){
+        List<Directors> directors = directorStorage.createDirectorsFilm(director, idFilm);
+        log.info("The directors was created for film with ID {}", idFilm);
+        return directors;
+    }
+
+    public List<Directors> updateDirectorsFilm(List<Directors> director, Long idFilm){
+        List<Directors> directors = directorStorage.updateDirectorsFilm(director, idFilm);
+        log.info("The directors was updated for film with ID {}", idFilm);
+        return directors;
+    }
 }

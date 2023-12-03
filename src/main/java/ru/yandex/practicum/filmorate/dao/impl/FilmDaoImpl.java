@@ -5,14 +5,14 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dao.DirectorStorage;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
-import ru.yandex.practicum.filmorate.dao.GenreStorage;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Directors;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.service.DirectorService;
+import ru.yandex.practicum.filmorate.service.GenreService;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -25,14 +25,14 @@ public class FilmDaoImpl implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final GenreStorage genreStorage;
+    private final GenreService genreService;
 
-    private final DirectorStorage directorStorage;
+    private final DirectorService directorService;
 
-    public FilmDaoImpl(JdbcTemplate jdbcTemplate, GenreStorage genreStorage, DirectorStorage directorStorage) {
+    public FilmDaoImpl(JdbcTemplate jdbcTemplate, GenreService genreService, DirectorService directorService) {
         this.jdbcTemplate = jdbcTemplate;
-        this.genreStorage = genreStorage;
-        this.directorStorage = directorStorage;
+        this.genreService = genreService;
+        this.directorService = directorService;
     }
 
     @Override
@@ -63,8 +63,8 @@ public class FilmDaoImpl implements FilmStorage {
                 "RELEASEDATE_FILM = ?, DURATION_FILM = ?, MPA_ID = ? WHERE UNIT_ID = ?";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
                 film.getDuration(), film.getMpa().getId(), film.getId());
-        genreStorage.createGenresFilm(film.getGenres(), film.getId());
-        directorStorage.createDirectorsFilm(film.getDirectors(), film.getId());
+        genreService.createGenresFilm(film.getGenres(), film.getId());
+        directorService.createDirectorsFilm(film.getDirectors(), film.getId());
         return getFilmsId(film.getId());
     }
 
