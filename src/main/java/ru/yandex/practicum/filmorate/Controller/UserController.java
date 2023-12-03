@@ -4,8 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Friend;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.RecommendationService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
@@ -17,10 +19,12 @@ import java.util.*;
 public class UserController {
 
     private final UserService userService;
+    private final RecommendationService recommendationService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RecommendationService recommendationService) {
         this.userService = userService;
+        this.recommendationService = recommendationService;
     }
 
     @PostMapping
@@ -74,4 +78,10 @@ public class UserController {
         log.info("вызван метод deleteUser - запрос на удаление пользователя с id " + id);
         userService.userDeleteById(id);
     }
+    @GetMapping("/{id}/recommendations") // рекомендация для пользователя по id
+    public List<Film> getFilmRecommendations(@PathVariable Long id) {
+        log.info("вызван метод getFilmRecommendations для пользователя с id: {}", id);
+        return recommendationService.getFilmRecommendations(id);
+    }
 }
+
