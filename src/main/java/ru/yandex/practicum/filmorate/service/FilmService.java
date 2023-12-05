@@ -90,9 +90,16 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
+    public List<Film> findFilmsOfLikesByUser(Long userId) {
+        List<Film> result = likesStorage.findFilmsOfLikesByUser(userId);
+        log.info("Returns a list of movies of likes {}", userId);
+        return result.stream().peek(filmCurrent -> filmCurrent.setGenres(genreService.getFilmGenres(filmCurrent.getId())))
+                .collect(Collectors.toList());
+    }
+
     public List<Film> getCommonFilms(Long userId, Long friendId) {
-        Collection<Film> listOfUserFilms = findFilmsOfLikes(userId);
-        Collection<Film> listOfFriendFilms = findFilmsOfLikes(friendId);
+        Collection<Film> listOfUserFilms = findFilmsOfLikesByUser(userId);
+        Collection<Film> listOfFriendFilms = findFilmsOfLikesByUser(friendId);
         Set<Film> commonList = new HashSet<>(listOfFriendFilms);
         commonList.retainAll(listOfUserFilms);
         return new ArrayList<>(commonList);

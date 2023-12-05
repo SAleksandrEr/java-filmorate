@@ -2,21 +2,27 @@ package ru.yandex.practicum.filmorate.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dao.LikesStorage;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/films")
 public class FilmController {
     private final FilmService filmService;
 
+    private final LikesStorage likesStorage;
+
+
     @Autowired
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmService filmService, LikesStorage likesStorage) {
         this.filmService = filmService;
+        this.likesStorage = likesStorage;
     }
 
     @PostMapping
@@ -69,6 +75,7 @@ public class FilmController {
     public List<Film> getPopularFilmsForFriends(@RequestParam Long userId, @RequestParam Long friendId) {
         return filmService.getCommonFilms(userId, friendId);
     }
+
 
     @GetMapping("/director/{id}")
     public List<Film> getFilmByDirectorId(@PathVariable("id") Long id, @RequestParam String sortBy) {
