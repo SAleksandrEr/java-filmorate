@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -83,13 +82,6 @@ public class FilmService {
             return likesStorage.deleteLikeId(id, userId);
     }
 
-    public List<Film> findFilmsOfLikes(Integer count) {
-        List<Film> result = likesStorage.findFilmsOfLikes(count);
-        log.info("Returns a list of the first count movies by number of likes {}", count);
-        return result.stream().peek(filmCurrent -> filmCurrent.setGenres(genreService.getFilmGenres(filmCurrent.getId())))
-                .collect(Collectors.toList());
-    }
-
     private void validate(Film data) {
         if (data.getReleaseDate().isBefore(DATA_RELIES_MIN)) {
             log.warn("The film date is not correct {} ",data.getReleaseDate());
@@ -114,5 +106,10 @@ public class FilmService {
     public List<Film> searchNameFilmsAndDirectors(String query, List<String> by) {
         log.info("Returns a list of the movies by query {} ", query + " from " + by);
         return filmStorage.searchNameFilmsAndDirectors(query, by);
+    }
+
+    public List<Film> getPopularFilms(Long count, Long genreId, Long year) {
+        log.info("Return popular films");
+        return filmStorage.getPopularFilms(count, genreId, year);
     }
 }

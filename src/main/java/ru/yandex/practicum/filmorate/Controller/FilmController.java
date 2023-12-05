@@ -51,15 +51,6 @@ public class FilmController {
             return filmService.deleteLikeId(id,userId);
     }
 
-    @GetMapping("/popular")
-    public List<Film> findFilmsOfLikes(@RequestParam(defaultValue = "10", required = false) Integer count) {
-        if (count > 0) {
-           return filmService.findFilmsOfLikes(count);
-        } else {
-            throw new ValidationException("Введенные данные не корректны " + count);
-        }
-    }
-
     @DeleteMapping("/{id}") //удаление фильма по id
     public void filmDeleteById(@PathVariable("id") Long filmId) {
         filmService.filmDeleteById(filmId);
@@ -77,5 +68,12 @@ public class FilmController {
             throw new ValidationException("Введенные данные не корректны " + by);
           }
         return filmService.searchNameFilmsAndDirectors(query, by);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(@RequestParam(required = false, defaultValue = "10") Long count,
+                                      @RequestParam(required = false) Long genreId,
+                                      @RequestParam(required = false) Long year) {
+        return filmService.getPopularFilms(count, genreId, year);
     }
 }
