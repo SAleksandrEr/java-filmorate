@@ -25,14 +25,18 @@ public class ReviewService {
     private final FilmReviewStorage filmReview;
 
     public Review addReview(Review review) {
-        checker(review.getFilmId(), review.getUserId());
+        filmService.findFilmsId(review.getFilmId());
+        userService.findUsersId(review.getUserId());
         validationReview(review);
+        log.info("Добавлен отзыв: {}", review);
         return reviewStorage.addReview(review);
     }
 
     public Review updateReview(Review review) {
-        checker(review.getFilmId(), review.getUserId());
+        filmService.findFilmsId(review.getFilmId());
+        userService.findUsersId(review.getUserId());
         validationReview(review);
+        log.info("Обновлён отзыв: {}", review);
         return reviewStorage.updateReview(review);
     }
 
@@ -40,6 +44,7 @@ public class ReviewService {
         if (!reviewStorage.isContains(id) || id == null) {
             throw new DataNotFoundException("Отзыв не найден: пустой или неправильный идентификатор");
         }
+        log.info("Удалён отзыв с идентификатором {}", id);
         reviewStorage.deleteReviewById(id);
     }
 
@@ -70,17 +75,17 @@ public class ReviewService {
         filmReview.deleteDislikeFromReview(reviewId, userId);
     }
 
-    private void checker(Long filmId, Long userId) {
-        if (filmId == null || filmService.findFilmsId(filmId) == null) {
-            throw new DataNotFoundException("Не найден фильм c идентификатором " + filmId);
-        }
-        if (userId == null || userService.findUsersId(userId) == null) {
-            throw new DataNotFoundException("Не найден пользователь с идентификатором " + userId);
-        }
-    }
+//    private void checker(Long filmId, Long userId) {
+//        if (filmId == null || filmService.findFilmsId(filmId) == null) {
+//            throw new DataNotFoundException("Не найден фильм c идентификатором " + filmId);
+//        }
+//        if (userId == null || userService.findUsersId(userId) == null) {
+//            throw new DataNotFoundException("Не найден пользователь с идентификатором " + userId);
+//        }
+//    }
 
     public static void validationReview(Review review) {
-        log.debug("validationReview({})", review);
+        log.info("validationReview({})", review);
         if (review.getContent() == null || review.getContent().isBlank()) {
             throw new ValidationException("Поле с описанием отзыва не может быть пустым");
         }
