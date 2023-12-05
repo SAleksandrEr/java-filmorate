@@ -53,16 +53,6 @@ public class LikesDaoImpl implements LikesStorage {
         }
     }
 
-    @Override
-    public List<Film> findFilmsOfLikes(Integer count) {
-        String sql = "SELECT * FROM (SELECT l.film_id, COUNT(l.user_id) " +
-                "AS noun FROM Likes AS l GROUP BY l.film_id) " +
-                "AS film_lik RIGHT JOIN Film AS f ON f.unit_id = film_lik.film_id " +
-                "LEFT JOIN Mpa AS m ON f.mpa_id = m.mpa_id " +
-                "ORDER BY noun DESC LIMIT ?";
-        return jdbcTemplate.query(sql, this::makeFilm,count);
-    }
-
     private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         long id = rs.getLong("unit_id");
         String nameFilm = rs.getString("name_film");
@@ -74,5 +64,39 @@ public class LikesDaoImpl implements LikesStorage {
         return Film.builder().name(nameFilm).description(description)
                 .releaseDate(releaseDateFilm).duration(durationFilm)
                 .mpa(Mpa.builder().name(nameMpa).id(mpaId).build()).id(id).genres(new ArrayList<>()).build();
+    }
+
+    @Override
+    public List<Long> getPopularFilms(Long count, Long genreId, Long year) {
+        String sql = "SELECT f.unit_id, COUNT(l.user_id) AS count_likes " +
+                "FROM Film AS f " +
+                "LEFT JOIN Likes AS l ON l.film_id = f.unit_id ";
+        if (genreId != null && year != null) {
+            sql = "SELECT f.unit_id, COUNT(l.user_id) AS count_likes " +
+                    "FROM Film AS f " +
+                    "LEFT JOIN Likes AS l ON l.film_id = f.unit_id " +
+                    "RIGHT JOIN Genre AS g ON g.film_id = f.unit_id " +
+                    "WHERE g.genre_id = " + genreId + " AND EXTRACT(YEAR FROM f.releaseDate_film) = " + year;
+        } else if (genreId != null) {
+            sql = "SELECT f.unit_id, COUNT(l.user_id) AS count_likes " +
+                    "FROM Film AS f " +
+                    "LEFT JOIN Likes AS l ON l.film_id = f.unit_id " +
+                    "RIGHT JOIN Genre AS g ON g.film_id = f.unit_id " +
+                    "WHERE g.genre_id = " + genreId;
+        } else if (year != null) {
+            sql = "SELECT f.unit_id, COUNT(l.user_id) AS count_likes " +
+                    "FROM Film AS f " +
+                    "LEFT JOIN Likes AS l ON l.film_id = f.unit_id " +
+                    "WHERE EXTRACT(YEAR FROM f.releaseDate_film) = " + year;
+        }
+
+        sql = sql + " GROUP BY f.unit_id " +
+                "ORDER BY count_likes DESC LIMIT " + count;
+
+        return jdbcTemplate.query(sql, this::getId);
+    }
+
+    private Long getId(ResultSet rs, int rowNum) throws SQLException {
+        return rs.getLong("unit_id");
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
+import ru.yandex.practicum.filmorate.dao.LikesStorage;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Directors;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -23,8 +24,11 @@ public class FilmDaoImpl implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public FilmDaoImpl(JdbcTemplate jdbcTemplate) {
+    private final LikesStorage likesStorage;
+
+    public FilmDaoImpl(JdbcTemplate jdbcTemplate, LikesStorage likesStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.likesStorage = likesStorage;
     }
 
     @Override
@@ -225,5 +229,14 @@ public class FilmDaoImpl implements FilmStorage {
                 "WHERE LOWER(d.name_director) LIKE ? " +
                 "ORDER BY noun DESC";
         return jdbcTemplate.query(sql, this::createsFilm, queryTitle, queryDirector);
+    }
+
+    @Override
+    public List<Film> getPopularFilms(Long count, Long genreId, Long year) {
+        List<Film> films = new ArrayList<>();
+        for (Long id : likesStorage.getPopularFilms(count, genreId, year)) {
+            films.add(getFilmsId(id));
+        }
+        return films;
     }
 }
