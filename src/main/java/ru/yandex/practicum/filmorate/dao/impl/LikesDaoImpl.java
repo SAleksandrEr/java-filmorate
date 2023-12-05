@@ -63,11 +63,6 @@ public class LikesDaoImpl implements LikesStorage {
         return jdbcTemplate.query(sql, this::makeFilm,count);
     }
 
-    public Collection<Film> findFilmsOfLikesByUser(Long userId) {
-        String sql = "SELECT * FROM film WHERE film_id IN (SELECT film_id FROM likes WHERE user_id = ?)";
-        return jdbcTemplate.query(sql, this::makeFilm,userId);
-        }
-
     private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         long id = rs.getLong("unit_id");
         String nameFilm = rs.getString("name_film");

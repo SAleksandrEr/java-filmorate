@@ -93,23 +93,11 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
-    public Collection<Film> findFilmsOfLikesByUser(Long userId) {
-        Collection<Film> result = likesStorage.findFilmsOfLikesByUser(userId);
-        log.info("Returns a list of movies of likes {}", userId);
-        for (Film film : result) {
-            film.setGenres(genreService.getFilmGenres(film.getId()));
-            film.setMpa(mpaService.findMpaId(film.getMpa().getId()));
-        }
-        return result;
-//        return result.stream().peek(filmCurrent -> filmCurrent.setGenres(genreService.getFilmGenres(filmCurrent.getId())))
-//                .collect(Collectors.toList());
-    }
-
     public List<Film> getCommonFilms(Long userId, Long friendId) {
-        Collection<Film> listOfUserFilms = findFilmsOfLikesByUser(userId);
-        Collection<Film> listOfFriendFilms = findFilmsOfLikesByUser(friendId);
-        Set<Film> commonList = new HashSet<>(listOfUserFilms);
-        commonList.retainAll(listOfFriendFilms);
+        Collection<Film> listOfUserFilms = filmStorage.getCommonFilms(userId);
+        Collection<Film> listOfFriendFilms = filmStorage.getCommonFilms(friendId);
+        Set<Film> commonList = new HashSet<>(listOfFriendFilms);
+        commonList.retainAll(listOfUserFilms);
         return new ArrayList<>(commonList);
     }
 

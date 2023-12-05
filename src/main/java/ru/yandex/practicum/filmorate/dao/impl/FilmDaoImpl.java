@@ -226,4 +226,19 @@ public class FilmDaoImpl implements FilmStorage {
                 "ORDER BY noun DESC";
         return jdbcTemplate.query(sql, this::createsFilm, queryTitle, queryDirector);
     }
+
+    public List<Film> getCommonFilms(Long userId) {
+        String sql = "SELECT DISTINCT * FROM (SELECT l.film_id, COUNT(l.user_id) AS noun, l.user_id " +
+                "FROM Likes AS l " +
+                "GROUP BY l.film_id, l.user_id) AS film_lik " +
+                "RIGHT JOIN Film AS f ON f.unit_id = film_lik.film_id " +
+                "LEFT JOIN Mpa AS m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN Genre AS g ON f.unit_id = g.film_id " +
+                "LEFT JOIN Genre_list AS gl ON g.genre_id = gl.generelist_id " +
+                "LEFT JOIN Film_director AS fd ON f.unit_id = fd.film_id " +
+                "LEFT JOIN Directors AS d ON fd.director_id = d.director_id " +
+                "WHERE user_id = ? " +
+                "ORDER BY noun DESC";
+        return jdbcTemplate.query(sql, this::createsFilm, userId);
+    }
 }
