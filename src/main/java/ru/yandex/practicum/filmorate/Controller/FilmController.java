@@ -52,7 +52,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> findFilmsOfLikes(@RequestParam(defaultValue = "10", required = false) Integer count) {
+    public List<Film> findFilmsOfLikes(@RequestParam(defaultValue = "10", required = false) Long count) {
         if (count > 0) {
            return filmService.findFilmsOfLikes(count);
         } else {
@@ -66,7 +66,7 @@ public class FilmController {
     }
 
     @GetMapping("/common")
-    public List<Film> getPopularFilmsForFriends(@RequestParam Integer userId, @RequestParam Integer friendId) {
+    public List<Film> getPopularFilmsForFriends(@RequestParam Long userId, @RequestParam Long friendId) {
         return filmService.getCommonFilms(userId, friendId);
     }
 

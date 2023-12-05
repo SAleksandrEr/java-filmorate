@@ -83,14 +83,14 @@ public class FilmService {
             return likesStorage.deleteLikeId(id, userId);
     }
 
-    public List<Film> findFilmsOfLikes(Integer count) {
+    public List<Film> findFilmsOfLikes(Long count) {
         List<Film> result = likesStorage.findFilmsOfLikes(count);
         log.info("Returns a list of the first count movies by number of likes {}", count);
         return result.stream().peek(filmCurrent -> filmCurrent.setGenres(genreService.getFilmGenres(filmCurrent.getId())))
                 .collect(Collectors.toList());
     }
 
-    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
         Collection<Film> listOfUserFilms = findFilmsOfLikes(userId);
         Collection<Film> listOfFriendFilms = findFilmsOfLikes(friendId);
         Set<Film> commonList = new HashSet<>(listOfFriendFilms);

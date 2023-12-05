@@ -12,8 +12,8 @@ import javax.validation.constraints.NotNull;
 public class Likes {
 
     @NotNull
-    private Integer userId;
+    private Long userId;
 
     @NotNull
-    private Integer filmId;
+    private Long filmId;
 }

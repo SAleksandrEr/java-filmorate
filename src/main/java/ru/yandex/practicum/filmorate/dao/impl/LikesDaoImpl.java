@@ -54,7 +54,7 @@ public class LikesDaoImpl implements LikesStorage {
     }
 
     @Override
-    public List<Film> findFilmsOfLikes(Integer count) {
+    public List<Film> findFilmsOfLikes(Long count) {
         String sql = "SELECT * FROM (SELECT l.film_id, COUNT(l.user_id) " +
                 "AS noun FROM Likes AS l GROUP BY l.film_id) " +
                 "AS film_lik RIGHT JOIN Film AS f ON f.unit_id = film_lik.film_id " +
