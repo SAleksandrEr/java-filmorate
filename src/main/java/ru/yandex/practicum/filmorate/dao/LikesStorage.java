@@ -13,5 +13,5 @@ public interface LikesStorage {
 
     List<Film> findFilmsOfLikes(Long count);
 
-    List<Film> findFilmsOfLikesByUser(Long userId);
+    Collection<Film> findFilmsOfLikesByUser(Long userId);
 }

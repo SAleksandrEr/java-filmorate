@@ -27,16 +27,19 @@ public class FilmService {
 
     private final UserService userService;
 
+    private final MpaService mpaService;
+
     private final DirectorService directorService;
 
 
     @Autowired
     public FilmService(@Qualifier("filmDaoImpl") FilmStorage filmStorage, GenreService genreService,
-                       LikesStorage likesStorage, UserService userService, DirectorService directorService) {
+                       LikesStorage likesStorage, UserService userService, MpaService mpaService, DirectorService directorService) {
         this.filmStorage = filmStorage;
         this.genreService = genreService;
         this.likesStorage = likesStorage;
         this.userService = userService;
+        this.mpaService = mpaService;
         this.directorService = directorService;
     }
 
@@ -90,18 +93,23 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
-    public List<Film> findFilmsOfLikesByUser(Long userId) {
-        List<Film> result = likesStorage.findFilmsOfLikesByUser(userId);
+    public Collection<Film> findFilmsOfLikesByUser(Long userId) {
+        Collection<Film> result = likesStorage.findFilmsOfLikesByUser(userId);
         log.info("Returns a list of movies of likes {}", userId);
-        return result.stream().peek(filmCurrent -> filmCurrent.setGenres(genreService.getFilmGenres(filmCurrent.getId())))
-                .collect(Collectors.toList());
+        for (Film film : result) {
+            film.setGenres(genreService.getFilmGenres(film.getId()));
+            film.setMpa(mpaService.findMpaId(film.getMpa().getId()));
+        }
+        return result;
+//        return result.stream().peek(filmCurrent -> filmCurrent.setGenres(genreService.getFilmGenres(filmCurrent.getId())))
+//                .collect(Collectors.toList());
     }
 
     public List<Film> getCommonFilms(Long userId, Long friendId) {
         Collection<Film> listOfUserFilms = findFilmsOfLikesByUser(userId);
         Collection<Film> listOfFriendFilms = findFilmsOfLikesByUser(friendId);
-        Set<Film> commonList = new HashSet<>(listOfFriendFilms);
-        commonList.retainAll(listOfUserFilms);
+        Set<Film> commonList = new HashSet<>(listOfUserFilms);
+        commonList.retainAll(listOfFriendFilms);
         return new ArrayList<>(commonList);
     }
 
