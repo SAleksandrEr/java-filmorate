@@ -4,11 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.LikesStorage;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.dao.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -27,19 +27,24 @@ public class FilmService {
 
     private final UserService userService;
 
+    private final DirectorService directorService;
+
+
     @Autowired
     public FilmService(@Qualifier("filmDaoImpl") FilmStorage filmStorage, GenreService genreService,
-                       LikesStorage likesStorage, UserService userService) {
+                       LikesStorage likesStorage, UserService userService, DirectorService directorService) {
         this.filmStorage = filmStorage;
         this.genreService = genreService;
         this.likesStorage = likesStorage;
         this.userService = userService;
+        this.directorService = directorService;
     }
 
     public Film createFilms(Film film) {
         validate(film);
         Film filmCurrant = filmStorage.createFilm(film);
         genreService.createGenresFilm(film.getGenres(), filmCurrant.getId());
+        directorService.createDirectorsFilm(film.getDirectors(), filmCurrant.getId());
         log.info("The film was created with ID {}", filmCurrant.getId());
         return filmStorage.getFilmsId(filmCurrant.getId());
     }
@@ -47,6 +52,7 @@ public class FilmService {
     public Film updateFilms(Film film) {
         validate(film);
         genreService.updateGenresFilm(film.getGenres(), film.getId());
+        directorService.updateDirectorsFilm(film.getDirectors(), film.getId());
         film = filmStorage.updateFilm(film);
         log.info("The film was update {}",film.getId());
         return film;
@@ -68,7 +74,7 @@ public class FilmService {
         Film film = findFilmsId(id);
         userService.findUsersId(userId);
         likesStorage.createLikeFilm(id, userId);
-        log.info("The user liked the movie {} filme - ", film);
+        log.info("The user liked the movie {} film - ", film);
         return film;
     }
 
@@ -104,5 +110,17 @@ public class FilmService {
             throw new DataNotFoundException("Фильм с такой айди не существует");
         }
         filmStorage.filmDeleteById(filmId);
+    }
+
+    public List<Film> getFilmsByDirectorId(Long id, String sortBy) {
+        if (directorService.getDirectorByID(id) == null) {
+            throw new DataNotFoundException("Режиссер с id = " + id + " не найден!");
+        }
+        return filmStorage.getFilmsByDirectorId(id, sortBy);
+    }
+
+    public List<Film> searchNameFilmsAndDirectors(String query, List<String> by) {
+        log.info("Returns a list of the movies by query {} ", query + " from " + by);
+        return filmStorage.searchNameFilmsAndDirectors(query, by);
     }
 }

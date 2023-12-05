@@ -2,14 +2,24 @@ package ru.yandex.practicum.filmorate.Controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Friend;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.RecommendationService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 @RestController
 @Slf4j
@@ -17,10 +27,12 @@ import java.util.*;
 public class UserController {
 
     private final UserService userService;
+    private final RecommendationService recommendationService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RecommendationService recommendationService) {
         this.userService = userService;
+        this.recommendationService = recommendationService;
     }
 
     @PostMapping
@@ -44,34 +56,40 @@ public class UserController {
         if (Objects.equals(id, friendId)) {
             throw new DataNotFoundException("UserID and FriendId Can't be the same");
         }
-            return userService.createdFriendsId(id,friendId);
+        return userService.createdFriendsId(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public boolean deleteFriendsId(@Valid @PathVariable("id") Long id,
-                                @PathVariable("friendId") Long friendId) {
-            return userService.deleteFriendsId(id,friendId);
+                                   @PathVariable("friendId") Long friendId) {
+        return userService.deleteFriendsId(id, friendId);
     }
 
     @GetMapping("/{id}/friends")
     public List<User> findUsersFriendsId(@PathVariable("id") Long id) {
-            return userService.findUsersFriendsId(id);
+        return userService.findUsersFriendsId(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> findUsersOtherId(@PathVariable("id") Long id,
                                        @PathVariable("otherId") Long otherId) {
-            return userService.findUsersOtherId(id,otherId);
+        return userService.findUsersOtherId(id, otherId);
     }
 
     @GetMapping("/{id}")
     public User findUsersId(@PathVariable("id") Long id) {
-            return userService.findUsersId(id);
+        return userService.findUsersId(id);
     }
 
     @DeleteMapping("/{id}") //удаление пользователя по id
     public void userDeleteById(@PathVariable("id") Long id) {
         log.info("вызван метод deleteUser - запрос на удаление пользователя с id " + id);
         userService.userDeleteById(id);
+    }
+
+    @GetMapping("/{id}/recommendations") // рекомендация для пользователя по id
+    public List<Film> getFilmRecommendations(@PathVariable Long id) {
+        log.info("вызван метод getFilmRecommendations для пользователя с id: {}", id);
+        return recommendationService.getFilmRecommendations(id);
     }
 }
