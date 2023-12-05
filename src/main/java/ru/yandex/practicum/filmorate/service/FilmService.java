@@ -126,4 +126,9 @@ public class FilmService {
         log.info("Returns a list of the movies by query {} ", query + " from " + by);
         return filmStorage.searchNameFilmsAndDirectors(query, by);
     }
+
+    public List<Film> getPopularFilms(Long count, Long genreId, Long year) {
+        log.info("Return popular films");
+        return filmStorage.getPopularFilms(count, genreId, year);
+    }
 }

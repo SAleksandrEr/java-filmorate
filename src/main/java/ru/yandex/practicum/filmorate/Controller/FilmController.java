@@ -2,27 +2,21 @@ package ru.yandex.practicum.filmorate.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dao.LikesStorage;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/films")
 public class FilmController {
     private final FilmService filmService;
 
-    private final LikesStorage likesStorage;
-
-
     @Autowired
-    public FilmController(FilmService filmService, LikesStorage likesStorage) {
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
-        this.likesStorage = likesStorage;
     }
 
     @PostMapping
@@ -57,15 +51,6 @@ public class FilmController {
             return filmService.deleteLikeId(id,userId);
     }
 
-    @GetMapping("/popular")
-    public List<Film> findFilmsOfLikes(@RequestParam(defaultValue = "10", required = false) Long count) {
-        if (count > 0) {
-           return filmService.findFilmsOfLikes(count);
-        } else {
-            throw new ValidationException("Введенные данные не корректны " + count);
-        }
-    }
-
     @DeleteMapping("/{id}") //удаление фильма по id
     public void filmDeleteById(@PathVariable("id") Long filmId) {
         filmService.filmDeleteById(filmId);
@@ -89,5 +74,12 @@ public class FilmController {
             throw new ValidationException("Введенные данные не корректны " + by);
           }
         return filmService.searchNameFilmsAndDirectors(query, by);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(@RequestParam(required = false, defaultValue = "10") Long count,
+                                      @RequestParam(required = false) Long genreId,
+                                      @RequestParam(required = false) Long year) {
+        return filmService.getPopularFilms(count, genreId, year);
     }
 }
