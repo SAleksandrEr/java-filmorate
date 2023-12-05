@@ -11,7 +11,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -82,6 +82,14 @@ public class FilmService {
         log.info("Returns a list of the first count movies by number of likes {}", count);
         return result.stream().peek(filmCurrent -> filmCurrent.setGenres(genreService.getFilmGenres(filmCurrent.getId())))
                 .collect(Collectors.toList());
+    }
+
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        Collection<Film> listOfUserFilms = findFilmsOfLikes(userId);
+        Collection<Film> listOfFriendFilms = findFilmsOfLikes(friendId);
+        Set<Film> commonList = new HashSet<>(listOfFriendFilms);
+        commonList.retainAll(listOfUserFilms);
+        return new ArrayList<>(commonList);
     }
 
     private void validate(Film data) {

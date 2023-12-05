@@ -2,17 +2,18 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
+
+import javax.validation.constraints.NotNull;
 
 @Data
 @SuperBuilder
 @NoArgsConstructor(force = true)
 public class Likes {
 
-    @NonNull
-    private Long userId;
+    @NotNull
+    private Integer userId;
 
-    @NonNull
-    private Long filmId;
+    @NotNull
+    private Integer filmId;
 }
