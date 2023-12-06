@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Friend;
 import ru.yandex.practicum.filmorate.model.User;
@@ -91,5 +92,10 @@ public class UserController {
     public List<Film> getFilmRecommendations(@PathVariable Long id) {
         log.info("вызван метод getFilmRecommendations для пользователя с id: {}", id);
         return recommendationService.getFilmRecommendations(id);
+    }
+
+    @GetMapping("/{id}/feed")
+    public List<Event> findUserIdEvents(@PathVariable("id") Long id) {
+        return userService.findUserIdEvents(id);
     }
 }

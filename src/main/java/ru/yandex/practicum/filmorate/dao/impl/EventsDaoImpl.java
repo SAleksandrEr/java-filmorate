@@ -55,8 +55,8 @@ public class EventsDaoImpl implements EventsStorage {
         }
     }
 
-    @Override
-    public Event getUserIdEvent(Long entityId) {
+    //@Override
+    private Event getUserIdEvent(Long entityId) {
         SqlRowSet genreRows = jdbcTemplate.queryForRowSet("SELECT * FROM Events WHERE event_id = ?", entityId);
         if (genreRows.next()) {
             long id = genreRows.getLong("event_id");

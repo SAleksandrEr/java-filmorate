@@ -4,10 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.EventsStorage;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.LikesStorage;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.EventOperation;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
@@ -28,15 +31,18 @@ public class FilmService {
 
     private final DirectorService directorService;
 
+    private final EventsStorage eventsStorage;
+
 
     @Autowired
     public FilmService(@Qualifier("filmDaoImpl") FilmStorage filmStorage, GenreService genreService,
-                       LikesStorage likesStorage, UserService userService, DirectorService directorService) {
+                       LikesStorage likesStorage, UserService userService, DirectorService directorService, EventsStorage eventsStorage) {
         this.filmStorage = filmStorage;
         this.genreService = genreService;
         this.likesStorage = likesStorage;
         this.userService = userService;
         this.directorService = directorService;
+        this.eventsStorage = eventsStorage;
     }
 
     public Film createFilms(Film film) {
@@ -73,13 +79,16 @@ public class FilmService {
         Film film = findFilmsId(id);
         userService.findUsersId(userId);
         likesStorage.createLikeFilm(id, userId);
+        eventsStorage.createUserIdEvents(film.getId(), userId, EventType.LIKE, EventOperation.ADD);
         log.info("The user liked the movie {} film - ", film);
         return film;
     }
 
-    public boolean deleteLikeId(Long id, Long userId) {
-            log.info("The user deleted the like FilmID - {}", id);
-            return likesStorage.deleteLikeId(id, userId);
+    public boolean deleteLikeId(Long id, Long userId) { // надо подумать!!!!
+        boolean status = likesStorage.deleteLikeId(id, userId);
+        eventsStorage.createUserIdEvents(id, userId, EventType.LIKE, EventOperation.REMOVE);
+        log.info("The user deleted the like FilmID - {}", id);
+        return status;
     }
 
     private void validate(Film data) {

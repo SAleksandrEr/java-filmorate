@@ -2,10 +2,14 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.EventsStorage;
 import ru.yandex.practicum.filmorate.dao.FilmReviewStorage;
 import ru.yandex.practicum.filmorate.dao.ReviewStorage;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
+import ru.yandex.practicum.filmorate.model.EventOperation;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
@@ -13,7 +17,6 @@ import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class ReviewService {
 
     private final ReviewStorage reviewStorage;
@@ -24,31 +27,48 @@ public class ReviewService {
 
     private final FilmReviewStorage filmReview;
 
+    private final EventsStorage eventsStorage;
+
+    @Autowired
+    public ReviewService(ReviewStorage reviewStorage, UserService userService, FilmService filmService,
+                         FilmReviewStorage filmReview, EventsStorage eventsStorage) {
+        this.reviewStorage = reviewStorage;
+        this.userService = userService;
+        this.filmService = filmService;
+        this.filmReview = filmReview;
+        this.eventsStorage = eventsStorage;
+    }
+
     public Review addReview(Review review) {
         filmService.findFilmsId(review.getFilmId());
         userService.findUsersId(review.getUserId());
         validationReview(review);
+        review = reviewStorage.addReview(review);
+        eventsStorage.createUserIdEvents(review.getReviewId(), review.getUserId(), EventType.REVIEW, EventOperation.ADD);
         log.info("Добавлен отзыв: {}", review);
-        return reviewStorage.addReview(review);
+        return review;
     }
 
     public Review updateReview(Review review) {
         filmService.findFilmsId(review.getFilmId());
         userService.findUsersId(review.getUserId());
         validationReview(review);
+        review = reviewStorage.updateReview(review);
+        eventsStorage.createUserIdEvents(review.getReviewId(), review.getUserId(), EventType.REVIEW, EventOperation.UPDATE);
         log.info("Обновлён отзыв: {}", review);
-        return reviewStorage.updateReview(review);
+        return review;
     }
 
-    public void deleteReviewById(Integer id) {
+    public void deleteReviewById(Long id) {
         if (!reviewStorage.isContains(id) || id == null) {
             throw new DataNotFoundException("Отзыв не найден: пустой или неправильный идентификатор");
         }
         log.info("Удалён отзыв с идентификатором {}", id);
+        eventsStorage.createUserIdEvents(id, getReviewById(id).getUserId(), EventType.REVIEW, EventOperation.REMOVE);
         reviewStorage.deleteReviewById(id);
     }
 
-    public Review getReviewById(Integer id) {
+    public Review getReviewById(Long id) {
         if (!reviewStorage.isContains(id) || id == null) {
             throw new DataNotFoundException("Отзыв не найден: пустой или неправильный идентификатор");
         }
@@ -59,19 +79,19 @@ public class ReviewService {
         return reviewStorage.getReviews(id, count);
     }
 
-    public void addLikeToReview(Integer reviewId, Long userId) {
+    public void addLikeToReview(Long reviewId, Long userId) {
         filmReview.addLikeToReview(reviewId, userId);
     }
 
-    public void addDislikeToReview(Integer reviewId, Long userId) {
+    public void addDislikeToReview(Long reviewId, Long userId) {
         filmReview.addDislikeToReview(reviewId, userId);
     }
 
-    public void deleteLikeFromReview(Integer reviewId, Long userId) {
+    public void deleteLikeFromReview(Long reviewId, Long userId) {
         filmReview.deleteLikeFromReview(reviewId, userId);
     }
 
-    public void deleteDislikeFromReview(Integer reviewId, Long userId) {
+    public void deleteDislikeFromReview(Long reviewId, Long userId) {
         filmReview.deleteDislikeFromReview(reviewId, userId);
     }
 
@@ -92,6 +112,6 @@ public class ReviewService {
         if (review.getIsPositive() == null) {
             throw new ValidationException("Попытка присвоить значению поля isPositive null");
         }
-        review.setUseful(0);
+     //   review.setUseful(0);
     }
 }

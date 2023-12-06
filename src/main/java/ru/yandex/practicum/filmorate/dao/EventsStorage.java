@@ -11,5 +11,5 @@ public interface EventsStorage {
 
     Event createUserIdEvents(Long entityId, Long userId, EventType eventType, EventOperation operation);
 
-    Event getUserIdEvent(Long entityId);
+    // Event getUserIdEvent(Long entityId);
 }

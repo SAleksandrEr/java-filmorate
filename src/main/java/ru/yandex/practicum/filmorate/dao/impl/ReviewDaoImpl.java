@@ -43,12 +43,12 @@ public class ReviewDaoImpl implements ReviewStorage {
     }
 
     @Override
-    public void deleteReviewById(Integer id) {
+    public void deleteReviewById(Long id) {
         jdbcTemplate.update("DELETE FROM reviews WHERE review_id=?", id);
     }
 
     @Override
-    public Review getReviewById(Integer id) {
+    public Review getReviewById(Long id) {
         log.info("getReviewById({})", id);
         Review review = jdbcTemplate.queryForObject(
                 "SELECT review_id, content, is_positive, user_id, film_id, useful " +
@@ -76,7 +76,7 @@ public class ReviewDaoImpl implements ReviewStorage {
     }
 
     @Override
-    public boolean isContains(Integer id) {
+    public boolean isContains(Long id) {
         try {
             getReviewById(id);
             log.info("Информация по отзыву с идентификатором {} найдена", id);
@@ -106,13 +106,15 @@ public class ReviewDaoImpl implements ReviewStorage {
     }
 
     public Review makeReview(ResultSet rs, int rowNum) throws SQLException {
-        Review review = new Review();
-        review.setReviewId(rs.getInt("review_id"));
-        review.setContent(rs.getString("content"));
-        review.setIsPositive(rs.getBoolean("is_positive"));
-        review.setUserId(rs.getLong("user_id"));
-        review.setFilmId(rs.getLong("film_id"));
-        review.setUseful(rs.getInt("useful"));
-        return review;
+//        Review review = new Review();
+//        review.setReviewId(rs.getLong("review_id"));
+//        review.setContent(rs.getString("content"));
+//        review.setIsPositive(rs.getBoolean("is_positive"));
+//        review.setUserId(rs.getLong("user_id"));
+//        review.setFilmId(rs.getLong("film_id"));
+//        review.setUseful(rs.getInt("useful"));
+        return Review.builder().reviewId(rs.getLong("review_id")).content(rs.getString("content"))
+                .isPositive(rs.getBoolean("is_positive")).userId(rs.getLong("user_id"))
+                .filmId(rs.getLong("film_id")).useful(rs.getInt("useful")).build();
     }
 }

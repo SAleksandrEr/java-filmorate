@@ -4,11 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.EventsStorage;
 import ru.yandex.practicum.filmorate.dao.FriendStorage;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
-import ru.yandex.practicum.filmorate.model.Friend;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 
 import java.util.List;
 
@@ -20,10 +20,13 @@ public class UserService {
 
     private final FriendStorage friendStorage;
 
+    private final EventsStorage eventsStorage;
+
     @Autowired
-    public UserService(@Qualifier("userDaoImpl") UserStorage userStorage, FriendStorage friendStorage) {
+    public UserService(@Qualifier("userDaoImpl") UserStorage userStorage, FriendStorage friendStorage, EventsStorage eventsStorage) {
         this.userStorage = userStorage;
         this.friendStorage = friendStorage;
+        this.eventsStorage = eventsStorage;
     }
 
     public User createUsers(User user) {
@@ -50,12 +53,14 @@ public class UserService {
         findUsersId(userId);
         findUsersId(friendId);
         List<Friend> friends = friendStorage.createFriendUser(friendId, userId);
+        eventsStorage.createUserIdEvents(friendId, userId, EventType.FRIEND, EventOperation.ADD);
         log.info("Created as a friend {}", friends);
         return friends;
     }
 
     public boolean deleteFriendsId(Long userId, Long friendId) {
         if (friendStorage.deleteFriendsId(userId, friendId)) {
+            eventsStorage.createUserIdEvents(friendId, userId, EventType.FRIEND, EventOperation.REMOVE);
             log.info("The user deleted the friend - {}", friendId);
             return true;
         } else {
@@ -96,5 +101,11 @@ public class UserService {
             throw new DataNotFoundException("Такого пользователя не существует");
         }
         userStorage.deleteUserById(id);
+    }
+
+    public List<Event> findUserIdEvents(Long id) {
+        findUsersId(id);
+        log.info("The events was get of UserID {} ", id);
+        return eventsStorage.findUserIdEvents(id);
     }
 }

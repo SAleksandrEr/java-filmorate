@@ -39,15 +39,15 @@ public class ErrorHandler {
         return new ErrorResponse(e.getObjectName());
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleThrowable(final Throwable e) {
-        return new ErrorResponse("An unexpected error occurred.");
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleSQLException(final SQLException e) {
-        return new ErrorResponse("Error request in the database.");
-    }
+//    @ExceptionHandler
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public ErrorResponse handleThrowable(final Throwable e) {
+//        return new ErrorResponse("An unexpected error occurred.");
+//    }
+//
+//    @ExceptionHandler
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public ErrorResponse handleSQLException(final SQLException e) {
+//        return new ErrorResponse("Error request in the database.");
+//    }
 }

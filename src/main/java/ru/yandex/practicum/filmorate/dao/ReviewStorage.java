@@ -13,13 +13,13 @@ public interface ReviewStorage {
 
     Review updateReview(Review review);
 
-    void deleteReviewById(Integer id);
+    void deleteReviewById(Long id);
 
-    Review getReviewById(Integer id);
+    Review getReviewById(Long id);
 
     List<Review> getReviews(Long id, int count);
 
-    boolean isContains(Integer id);
+    boolean isContains(Long id);
 
     void increaseScore(Review review);
 

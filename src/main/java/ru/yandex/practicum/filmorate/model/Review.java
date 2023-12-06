@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.constraints.NotBlank;
@@ -16,11 +17,12 @@ import javax.validation.constraints.PositiveOrZero;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class Review {
     /**
      * Поле с идентификатором отзыва.
      */
-    private Integer reviewId;
+    private Long reviewId;
     /**
      * Поле с содержанием комментария.
      */
@@ -45,7 +47,7 @@ public class Review {
      * Поле с рейтингом полезности комментария, если тип отзыва true - рейтинг увеличивается на единицу.
      */
     @PositiveOrZero
-    private Integer useful;
+    private Integer useful = 0;
 
     /**
      * Конструктор создание нового объекта отзыва.
@@ -53,12 +55,12 @@ public class Review {
      * @see Review#Review(String, Boolean, Long, Long)
      */
 
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    @Autowired
-    public Review(String content, Boolean isPositive, Long userId, Long filmId) {
-        this.content = content;
-        this.isPositive = isPositive;
-        this.userId = userId;
-        this.filmId = filmId;
-    }
+//    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+//    @Autowired
+//    public Review(String content, Boolean isPositive, Long userId, Long filmId) {
+//        this.content = content;
+//        this.isPositive = isPositive;
+//        this.userId = userId;
+//        this.filmId = filmId;
+//    }
 }
