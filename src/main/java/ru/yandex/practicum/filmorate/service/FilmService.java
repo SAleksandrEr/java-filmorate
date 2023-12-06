@@ -27,19 +27,16 @@ public class FilmService {
 
     private final UserService userService;
 
-    private final MpaService mpaService;
-
     private final DirectorService directorService;
 
 
     @Autowired
     public FilmService(@Qualifier("filmDaoImpl") FilmStorage filmStorage, GenreService genreService,
-                       LikesStorage likesStorage, UserService userService, MpaService mpaService, DirectorService directorService) {
+                       LikesStorage likesStorage, UserService userService, DirectorService directorService) {
         this.filmStorage = filmStorage;
         this.genreService = genreService;
         this.likesStorage = likesStorage;
         this.userService = userService;
-        this.mpaService = mpaService;
         this.directorService = directorService;
     }
 
@@ -84,13 +81,6 @@ public class FilmService {
     public boolean deleteLikeId(Long id, Long userId) {
             log.info("The user deleted the like FilmID - {}", id);
             return likesStorage.deleteLikeId(id, userId);
-    }
-
-    public List<Film> findFilmsOfLikes(Long count) {
-        List<Film> result = likesStorage.findFilmsOfLikes(count);
-        log.info("Returns a list of the first count movies by number of likes {}", count);
-        return result.stream().peek(filmCurrent -> filmCurrent.setGenres(genreService.getFilmGenres(filmCurrent.getId())))
-                .collect(Collectors.toList());
     }
 
     public List<Film> getCommonFilms(Long userId, Long friendId) {
