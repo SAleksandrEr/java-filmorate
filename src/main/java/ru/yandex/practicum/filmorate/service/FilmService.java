@@ -14,7 +14,7 @@ import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -89,6 +89,14 @@ public class FilmService {
         eventsStorage.createUserIdEvents(id, userId, EventType.LIKE, EventOperation.REMOVE);
         log.info("The user deleted the like FilmID - {}", id);
         return status;
+    }
+
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        Collection<Film> listOfUserFilms = filmStorage.getCommonFilms(userId);
+        Collection<Film> listOfFriendFilms = filmStorage.getCommonFilms(friendId);
+        Set<Film> commonList = new HashSet<>(listOfFriendFilms);
+        commonList.retainAll(listOfUserFilms);
+        return new ArrayList<>(commonList);
     }
 
     private void validate(Film data) {

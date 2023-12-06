@@ -53,6 +53,15 @@ public class LikesDaoImpl implements LikesStorage {
         }
     }
 
+    public List<Film> findFilmsOfLikes(Long count) {
+        String sql = "SELECT * FROM (SELECT l.film_id, COUNT(l.user_id) " +
+                "AS noun FROM Likes AS l GROUP BY l.film_id) " +
+                "AS film_lik RIGHT JOIN Film AS f ON f.unit_id = film_lik.film_id " +
+                "LEFT JOIN Mpa AS m ON f.mpa_id = m.mpa_id " +
+                "ORDER BY noun DESC LIMIT ?";
+        return jdbcTemplate.query(sql, this::makeFilm,count);
+    }
+
     private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         long id = rs.getLong("unit_id");
         String nameFilm = rs.getString("name_film");
