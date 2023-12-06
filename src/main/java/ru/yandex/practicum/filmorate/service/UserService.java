@@ -32,20 +32,20 @@ public class UserService {
     public User createUsers(User user) {
         validate(user);
         user = userStorage.createUser(user);
-        log.info("The user was created with ID {}", user.getId());
+        log.info("Пользователь был создан с ID {}", user.getId());
         return user;
     }
 
     public User updateUsers(User user) {
         validate(user);
         user = userStorage.updateUser(user);
-        log.info("The film was update {}",user);
+        log.info("Пользователь был обновлен {}",user);
         return user;
     }
 
     public List<User> getAllUsers() {
         List<User> listUser = userStorage.getAllUser();
-        log.info("The all users was get {}", listUser.size());
+        log.info("Все пользователи были получены {}", listUser.size());
         return listUser;
     }
 
@@ -54,14 +54,14 @@ public class UserService {
         findUsersId(friendId);
         List<Friend> friends = friendStorage.createFriendUser(friendId, userId);
         eventsStorage.createUserIdEvents(friendId, userId, EventType.FRIEND, EventOperation.ADD);
-        log.info("Created as a friend {}", friends);
+        log.info("Добавлен друг {}", friends);
         return friends;
     }
 
     public boolean deleteFriendsId(Long userId, Long friendId) {
         if (friendStorage.deleteFriendsId(userId, friendId)) {
             eventsStorage.createUserIdEvents(friendId, userId, EventType.FRIEND, EventOperation.REMOVE);
-            log.info("The user deleted the friend - {}", friendId);
+            log.info("Пользователь удалил друга - {}", userId + " " + friendId);
             return true;
         } else {
             return false;
@@ -71,7 +71,7 @@ public class UserService {
     public List<User> findUsersFriendsId(Long userId) {
         findUsersId(userId);
         List<User> results = friendStorage.findFriendUserId(userId);
-        log.info("We return a list of users who are his friends ID {} ", userId);
+        log.info("Получен список друзей, у пользователя с ID {} ", userId);
         return results;
     }
 
@@ -79,21 +79,14 @@ public class UserService {
         findUsersId(id);
         findUsersId(otherId);
         List<User> results = friendStorage.findUsersOtherId(id, otherId);
-        log.info("Displays a list of friends shared with another user ID {} ", id + " и " + otherId);
+        log.info("Список друзей, общий с другим пользователем с ID {} ", id + " и " + otherId);
         return results;
     }
 
     public User findUsersId(Long id) {
         User user = userStorage.getUsersId(id);
-        log.info("The user was get of ID {} ", id);
+        log.info("Получен пользователь с ID {} ", id);
         return user;
-    }
-
-    private void validate(User data) {
-        if (data.getName() == null || data.getName().isBlank()) {
-            data.setName(data.getLogin());
-            log.info("Display name is empty - login will be used - {} ", data.getName());
-        }
     }
 
     public void userDeleteById(Long id) { //метод удаления пользователя по id
@@ -101,11 +94,19 @@ public class UserService {
             throw new DataNotFoundException("Такого пользователя не существует");
         }
         userStorage.deleteUserById(id);
+        log.info("вызван метод deleteUser - запрос на удаление пользователя с id " + id);
     }
 
     public List<Event> findUserIdEvents(Long id) {
         findUsersId(id);
-        log.info("The events was get of UserID {} ", id);
+        log.info("Список событий у UserID {} ", id);
         return eventsStorage.findUserIdEvents(id);
+    }
+
+    private void validate(User data) {
+        if (data.getName() == null || data.getName().isBlank()) {
+            data.setName(data.getLogin());
+            log.info("Отображаемое имя пустое - Будет использован логин - {} ", data.getName());
+        }
     }
 }

@@ -50,7 +50,7 @@ public class EventsDaoImpl implements EventsStorage {
         if (keyHolder.getKey() != null) {
             return getUserIdEvent(Objects.requireNonNull(keyHolder.getKey()).longValue());
         } else {
-            throw new DataNotFoundException("The Event has not been add for userId "
+            throw new DataNotFoundException("Событие не было добавлено для userId "
                     + userId + " - " + entityId);
         }
     }
@@ -67,7 +67,7 @@ public class EventsDaoImpl implements EventsStorage {
             return Event.builder().eventId(id).entityId(entity).userId(userId).eventType(EventType.valueOf(eventType))
                     .operation(EventOperation.valueOf(operation)).timestamp(timeStamp).build();
         } else {
-            throw new DataNotFoundException("The Event has not been find with id " + entityId);
+            throw new DataNotFoundException("Событие не найдено по id " + entityId);
         }
     }
 

@@ -20,7 +20,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @Autowired
-    public ReviewController (ReviewService reviewService) {
+    public ReviewController(ReviewService reviewService) {
         this.reviewService = reviewService;
     }
 
@@ -52,8 +52,7 @@ public class ReviewController {
     @GetMapping
     public List<Review> getReviews(
             @RequestParam(name = "filmId", defaultValue = "-1", required = false) Long filmId,
-            @RequestParam(name = "count", defaultValue = "10", required = false) int count
-    ) {
+            @RequestParam(name = "count", defaultValue = "10", required = false) int count) {
         return reviewService.getReviews(filmId, count);
     }
 

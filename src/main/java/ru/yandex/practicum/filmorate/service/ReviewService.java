@@ -75,22 +75,27 @@ public class ReviewService {
     }
 
     public List<Review> getReviews(Long id, int count) {
+        log.info("Получен отзывы для фильма с идентификатором {}", id);
         return reviewStorage.getReviews(id, count);
     }
 
     public void addLikeToReview(Long reviewId, Long userId) {
+        log.info("Добавлен лак на отзыв от пользователя {}", reviewId + " " + userId);
         filmReview.addLikeToReview(reviewId, userId);
     }
 
     public void addDislikeToReview(Long reviewId, Long userId) {
+        log.info("Добавлен дизлайк на отзыв от пользователя {}", reviewId + " " + userId);
         filmReview.addDislikeToReview(reviewId, userId);
     }
 
     public void deleteLikeFromReview(Long reviewId, Long userId) {
+        log.info("Удален лайк на отзыв от пользователя {}", reviewId + " " + userId);
         filmReview.deleteLikeFromReview(reviewId, userId);
     }
 
     public void deleteDislikeFromReview(Long reviewId, Long userId) {
+        log.info("Удален дизлайк на отзыв от пользователя {}", reviewId + " " + userId);
         filmReview.deleteDislikeFromReview(reviewId, userId);
     }
 

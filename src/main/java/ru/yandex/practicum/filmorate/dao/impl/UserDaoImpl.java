@@ -71,16 +71,6 @@ public class UserDaoImpl implements UserStorage {
         return users.get(0);
     }
 
-    private User makeUser(ResultSet rs, int rowNum) throws SQLException {
-        long id = rs.getLong("user_id");
-        String emailUser = rs.getString("email_user");
-        String loginUser = rs.getString("login_user");
-        String nameUser = rs.getString("name_user");
-        LocalDate birthdayUser = rs.getDate("birthday_user").toLocalDate();
-        return User.builder().email(emailUser).login(loginUser)
-                .name(nameUser).birthday(birthdayUser).id(id).build();
-    }
-
     @Override
     public void deleteUserById(Long id) {
         try {
@@ -89,5 +79,15 @@ public class UserDaoImpl implements UserStorage {
         } catch (EmptyResultDataAccessException e) {
             throw new DataNotFoundException("не верный id пользователя ");
         }
+    }
+
+    private User makeUser(ResultSet rs, int rowNum) throws SQLException {
+        long id = rs.getLong("user_id");
+        String emailUser = rs.getString("email_user");
+        String loginUser = rs.getString("login_user");
+        String nameUser = rs.getString("name_user");
+        LocalDate birthdayUser = rs.getDate("birthday_user").toLocalDate();
+        return User.builder().email(emailUser).login(loginUser)
+                .name(nameUser).birthday(birthdayUser).id(id).build();
     }
 }

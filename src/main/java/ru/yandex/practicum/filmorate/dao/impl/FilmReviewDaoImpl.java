@@ -1,13 +1,11 @@
 package ru.yandex.practicum.filmorate.dao.impl;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.FilmReviewStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@Slf4j
 @Component
 public class FilmReviewDaoImpl implements FilmReviewStorage {
     private final JdbcTemplate jdbcTemplate;

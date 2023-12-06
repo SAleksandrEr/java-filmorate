@@ -50,7 +50,7 @@ public class FilmService {
         Film filmCurrant = filmStorage.createFilm(film);
         genreService.createGenresFilm(film.getGenres(), filmCurrant.getId());
         directorService.createDirectorsFilm(film.getDirectors(), filmCurrant.getId());
-        log.info("The film was created with ID {}", filmCurrant.getId());
+        log.info("Фильм создан с ID {}", filmCurrant.getId());
         return filmStorage.getFilmsId(filmCurrant.getId());
     }
 
@@ -59,19 +59,19 @@ public class FilmService {
         genreService.updateGenresFilm(film.getGenres(), film.getId());
         directorService.updateDirectorsFilm(film.getDirectors(), film.getId());
         film = filmStorage.updateFilm(film);
-        log.info("The film was update {}",film.getId());
+        log.info("Фильм был обновлен с ID {}",film.getId());
         return film;
     }
 
     public List<Film> getAllFilms() {
         List<Film> film = filmStorage.getAllFilm();
-        log.info("The all films was get {}", film.size());
+        log.info("Все фильмы были получены {}", film.size());
         return film;
     }
 
     public Film findFilmsId(Long id) {
         Film film = filmStorage.getFilmsId(id);
-        log.info("The film was get of ID {} ", film);
+        log.info("Получен фильм c ID {} ", film);
         return film;
     }
 
@@ -80,14 +80,14 @@ public class FilmService {
         userService.findUsersId(userId);
         likesStorage.createLikeFilm(id, userId);
         eventsStorage.createUserIdEvents(film.getId(), userId, EventType.LIKE, EventOperation.ADD);
-        log.info("The user liked the movie {} film - ", film);
+        log.info("Пользователю понравился фильм {} film - ", film);
         return film;
     }
 
     public boolean deleteLikeId(Long id, Long userId) { // надо подумать!!!!
         boolean status = likesStorage.deleteLikeId(id, userId);
         eventsStorage.createUserIdEvents(id, userId, EventType.LIKE, EventOperation.REMOVE);
-        log.info("The user deleted the like FilmID - {}", id);
+        log.info("Пользователь удалил лайк FilmID - {}", id);
         return status;
     }
 
@@ -99,16 +99,9 @@ public class FilmService {
         return new ArrayList<>(commonList);
     }
 
-    private void validate(Film data) {
-        if (data.getReleaseDate().isBefore(DATA_RELIES_MIN)) {
-            log.warn("The film date is not correct {} ",data.getReleaseDate());
-            throw new ValidationException("Invalid date" + data);
-        }
-    }
-
     public void filmDeleteById(Long filmId) { //метод удаления фильма по id
         if (filmStorage.getFilmsId(filmId) == null) {
-            throw new DataNotFoundException("Фильм с такой айди не существует");
+            throw new DataNotFoundException("Фильм с таким id не существует " + filmId);
         }
         filmStorage.filmDeleteById(filmId);
     }
@@ -121,12 +114,19 @@ public class FilmService {
     }
 
     public List<Film> searchNameFilmsAndDirectors(String query, List<String> by) {
-        log.info("Returns a list of the movies by query {} ", query + " from " + by);
+        log.info("Получен список фильмов по запросу {} ", query + " из " + by);
         return filmStorage.searchNameFilmsAndDirectors(query, by);
     }
 
     public List<Film> getPopularFilms(Long count, Long genreId, Long year) {
-        log.info("Return popular films");
+        log.info("Получены популярные фильмы");
         return filmStorage.getPopularFilms(count, genreId, year);
+    }
+
+    private void validate(Film data) {
+        if (data.getReleaseDate().isBefore(DATA_RELIES_MIN)) {
+            log.warn("Дата фильма не верна {} ",data.getReleaseDate());
+            throw new ValidationException("Invalid date" + data);
+        }
     }
 }

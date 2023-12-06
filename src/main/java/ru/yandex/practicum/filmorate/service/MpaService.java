@@ -18,13 +18,13 @@ public class MpaService {
 
     public List<Mpa> getAllMpa() {
         List<Mpa> listMpa = mpaStorage.getAllMpa();
-        log.info("The all mpa was get {}", listMpa);
+        log.info("Все mpa получены {}", listMpa);
         return listMpa;
     }
 
     public Mpa findMpaId(Long id) {
         Mpa mpa = mpaStorage.findMpaId(id);
-        log.info("The mpa was get of ID {}", id);
+        log.info("mpa получены по ID {}", id);
         return mpa;
     }
 }
