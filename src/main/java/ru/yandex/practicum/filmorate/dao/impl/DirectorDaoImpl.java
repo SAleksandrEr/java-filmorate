@@ -30,12 +30,6 @@ public class DirectorDaoImpl implements DirectorStorage {
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeDirectorList(rs));
     }
 
-    private Directors makeDirectorList(ResultSet rs) throws SQLException {
-        Long id = rs.getLong("director_id");
-        String directorName = rs.getString("name_director");
-        return Directors.builder().name(directorName).id(id).build();
-    }
-
     @Override
     public Directors getDirectorByID(Long id) {
         SqlRowSet directorRows = jdbcTemplate.queryForRowSet("SELECT * FROM Directors WHERE director_id = ?", id);
@@ -44,7 +38,7 @@ public class DirectorDaoImpl implements DirectorStorage {
             String nameDirector = directorRows.getString("name_director");
             return Directors.builder().name(nameDirector).id(directorId).build();
         } else {
-            throw new DataNotFoundException("The Directors has not been find with id " + id);
+            throw new DataNotFoundException("Режиссеры по id не найдены " + id);
         }
     }
 
@@ -66,7 +60,7 @@ public class DirectorDaoImpl implements DirectorStorage {
         }, keyHolder);
         director.setId(keyHolder.getKey().longValue());
         if (keyHolder.getKey() == null) {
-            throw new DataNotFoundException("The Director has not been add with id " +
+            throw new DataNotFoundException("Режиссер не был добавлен с id " +
                     director.getId());
         }
         return director;
@@ -90,7 +84,7 @@ public class DirectorDaoImpl implements DirectorStorage {
                 return stmt;
             }, keyHolder);
             if (keyHolder.getKey() == null) {
-                throw new DataNotFoundException("The Directors for Film has not been add with id " +
+                throw new DataNotFoundException("Режиссеры фильмов не были добавлены с id " +
                         idFilm + " - " + directors);
             }
         }
@@ -104,11 +98,6 @@ public class DirectorDaoImpl implements DirectorStorage {
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeDirectors(rs), idFilm);
     }
 
-    private Directors makeDirectors(ResultSet rs) throws SQLException {
-        long id = rs.getInt("director_id");
-        String descriptionGenre = rs.getString("name_director");
-        return Directors.builder().name(descriptionGenre).id(id).build();
-    }
 
     @Override
     public List<Directors> updateDirectorsFilm(List<Directors> directors, Long idFilm) {
@@ -121,9 +110,21 @@ public class DirectorDaoImpl implements DirectorStorage {
         return getFilmDirectors(idFilm);
     }
 
+    private Directors makeDirectors(ResultSet rs) throws SQLException {
+        long id = rs.getInt("director_id");
+        String descriptionGenre = rs.getString("name_director");
+        return Directors.builder().name(descriptionGenre).id(id).build();
+    }
+
     private boolean deleteDirectorsFilm(Long idFilm) {
         String sqlQuery = "DELETE FROM Film_director WHERE film_id = ?";
         return jdbcTemplate.update(sqlQuery, idFilm) > 0;
+    }
+
+    private Directors makeDirectorList(ResultSet rs) throws SQLException {
+        Long id = rs.getLong("director_id");
+        String directorName = rs.getString("name_director");
+        return Directors.builder().name(directorName).id(id).build();
     }
 
 }

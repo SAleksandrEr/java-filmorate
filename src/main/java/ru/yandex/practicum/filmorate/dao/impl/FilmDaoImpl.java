@@ -83,7 +83,7 @@ public class FilmDaoImpl implements FilmStorage {
                 "LEFT JOIN Directors AS d ON fd.director_id = d.director_id " +
                 "WHERE f.unit_id = ?";
         List<Film> films = jdbcTemplate.query(sql, this::createsFilm, id);
-        if (films.size() != 1) {
+        if (Objects.requireNonNull(films).size() != 1) {
             throw new DataNotFoundException(String.format("Фильм c id %s отсутствует", id));
         }
         return films.get(0);
@@ -110,86 +110,6 @@ public class FilmDaoImpl implements FilmStorage {
             throw new DataNotFoundException("Нет возможности отсортировать по " + sortBy);
         }
         return films;
-    }
-
-    private List<Film> getSortedFilmsByYear(Long id) {
-        String sql = "SELECT * " +
-                "FROM Film AS f " +
-                "LEFT JOIN Genre AS g ON f.unit_id = g.film_id " +
-                "LEFT JOIN Genre_list AS gl ON g.genre_id = gl.generelist_id " +
-                "LEFT JOIN Film_director AS fd ON f.unit_id = fd.film_id " +
-                "LEFT JOIN Directors AS d ON fd.director_id = d.director_id " +
-                "LEFT JOIN Mpa AS m ON f.mpa_id = m.mpa_id " +
-                "WHERE d.director_id = ? " +
-                "GROUP BY d.director_id, f.releaseDate_film " +
-                "ORDER BY EXTRACT(YEAR FROM CAST(f.releaseDate_film AS DATE))";
-        return jdbcTemplate.query(sql, this::createsFilm, id);
-    }
-
-    private List<Film> getSortedFilmsByLikes(Long id) {
-        String sql = "SELECT * FROM Film AS f " +
-                "LEFT JOIN Film_director AS fd ON f.unit_id = fd.film_id " +
-                "LEFT JOIN Genre AS g ON f.unit_id = g.film_id " +
-                "LEFT JOIN Genre_list AS gl ON g.genre_id = gl.generelist_id " +
-                "LEFT JOIN Directors AS d ON fd.director_id = d.director_id " +
-                "LEFT JOIN Likes AS l ON l.film_id = f.unit_id " +
-                "LEFT JOIN Mpa AS m ON f.mpa_id = m.mpa_id " +
-                "WHERE d.director_id = ? " +
-                "GROUP BY d.director_id, gl.generelist_id " +
-                "ORDER BY COUNT(l.film_id) DESC";
-        return jdbcTemplate.query(sql, this::createsFilm, id);
-    }
-
-    private List<Film> createsFilm(ResultSet rs) throws SQLException {
-        ResultSetExtractor<List<Film>> resultSetExtractor = rs1 -> {
-            Map<Long, Film> list = new LinkedHashMap<>();
-            while (rs1.next()) {
-                if (list.containsKey(rs1.getLong("unit_id"))) {
-                    list.get(rs1.getLong("unit_id")).getGenres().add(Genres.builder()
-                            .id(rs1.getLong("genre_id"))
-                            .name(rs1.getString("description_genre"))
-                            .build());
-                    if (rs1.getLong("director_id") != 0) {
-                        list.get(rs1.getLong("unit_id")).getDirectors().add(Directors.builder()
-                                .id(rs1.getLong("director_id"))
-                                .name(rs1.getString("name_director"))
-                                .build());
-                    }
-                } else {
-                    Film film = Film.builder()
-                            .id(rs1.getLong("unit_id"))
-                            .name(rs1.getString("name_film"))
-                            .description(rs1.getString("description_film"))
-                            .releaseDate(rs1.getDate("releaseDate_film").toLocalDate())
-                            .duration(rs1.getInt("duration_film"))
-                            .mpa(Mpa.builder()
-                                    .id(rs1.getLong("mpa_id"))
-                                    .name(rs1.getString("name_mpa"))
-                                    .build())
-                            .genres(new ArrayList<>())
-                            .directors(new ArrayList<>())
-                            .build();
-
-                    if (rs1.getLong("genre_id") != 0) {
-                        film.getGenres().add(Genres.builder()
-                                .id(rs1.getLong("genre_id"))
-                                .name(rs1.getString("description_genre"))
-                                .build());
-                    }
-
-                    if (rs1.getLong("director_id") != 0) {
-                        film.getDirectors().add(Directors.builder()
-                                .id(rs1.getLong("director_id"))
-                                .name(rs1.getString("name_director"))
-                                .build());
-                    }
-
-                    list.put(film.getId(), film);
-                }
-            }
-            return new ArrayList<>(list.values());
-        };
-        return resultSetExtractor.extractData(rs);
     }
 
     @Override
@@ -231,17 +151,17 @@ public class FilmDaoImpl implements FilmStorage {
         return jdbcTemplate.query(sql, this::createsFilm, queryTitle, queryDirector);
     }
 
-    @Override
-    public List<Film> getPopularFilms(Long count, Long genreId, Long year) {
-        List<Film> films = new ArrayList<>();
-        for (Long id : likesStorage.getPopularFilms(count, genreId, year)) {
-            films.add(getFilmsId(id));
-        }
-        return films;
+   @Override
+   public List<Film> getPopularFilms(Long count, Long genreId, Long year) {
+       List<Film> films = new ArrayList<>();
+       for (Long id : likesStorage.getPopularFilms(count, genreId, year)) {
+           films.add(getFilmsId(id));
+       }
+       return films;
     }
 
-    public List<Film> getCommonFilms(Long userId) {
-        String sql = "SELECT DISTINCT * FROM (SELECT l.film_id, COUNT(l.user_id) AS noun, l.user_id " +
+   public List<Film> getCommonFilms(Long userId) {
+       String sql = "SELECT DISTINCT * FROM (SELECT l.film_id, COUNT(l.user_id) AS noun, l.user_id " +
                 "FROM Likes AS l " +
                 "GROUP BY l.film_id, l.user_id) AS film_lik " +
                 "RIGHT JOIN Film AS f ON f.unit_id = film_lik.film_id " +
@@ -254,4 +174,83 @@ public class FilmDaoImpl implements FilmStorage {
                 "ORDER BY noun DESC";
         return jdbcTemplate.query(sql, this::createsFilm, userId);
     }
+
+   private List<Film> getSortedFilmsByYear(Long id) {
+       String sql = "SELECT * " +
+               "FROM Film AS f " +
+               "LEFT JOIN Genre AS g ON f.unit_id = g.film_id " +
+               "LEFT JOIN Genre_list AS gl ON g.genre_id = gl.generelist_id " +
+               "LEFT JOIN Film_director AS fd ON f.unit_id = fd.film_id " +
+               "LEFT JOIN Directors AS d ON fd.director_id = d.director_id " +
+               "LEFT JOIN Mpa AS m ON f.mpa_id = m.mpa_id " +
+               "WHERE d.director_id = ? " +
+               "GROUP BY d.director_id, f.releaseDate_film " +
+               "ORDER BY EXTRACT(YEAR FROM CAST(f.releaseDate_film AS DATE))";
+       return jdbcTemplate.query(sql, this::createsFilm, id);
+   }
+
+   private List<Film> getSortedFilmsByLikes(Long id) {
+       String sql = "SELECT * FROM Film AS f " +
+               "LEFT JOIN Film_director AS fd ON f.unit_id = fd.film_id " +
+               "LEFT JOIN Genre AS g ON f.unit_id = g.film_id " +
+               "LEFT JOIN Genre_list AS gl ON g.genre_id = gl.generelist_id " +
+               "LEFT JOIN Directors AS d ON fd.director_id = d.director_id " +
+               "LEFT JOIN Likes AS l ON l.film_id = f.unit_id " +
+               "LEFT JOIN Mpa AS m ON f.mpa_id = m.mpa_id " +
+               "WHERE d.director_id = ? " +
+               "GROUP BY d.director_id, gl.generelist_id " +
+               "ORDER BY COUNT(l.film_id) DESC";
+       return jdbcTemplate.query(sql, this::createsFilm, id);
+   }
+
+   private List<Film> createsFilm(ResultSet rs) throws SQLException {
+       ResultSetExtractor<List<Film>> resultSetExtractor = rs1 -> {
+           Map<Long, Film> list = new LinkedHashMap<>();
+           while (rs1.next()) {
+               if (list.containsKey(rs1.getLong("unit_id"))) {
+                   list.get(rs1.getLong("unit_id")).getGenres().add(Genres.builder()
+                           .id(rs1.getLong("genre_id"))
+                           .name(rs1.getString("description_genre"))
+                           .build());
+                   if (rs1.getLong("director_id") != 0) {
+                       list.get(rs1.getLong("unit_id")).getDirectors().add(Directors.builder()
+                               .id(rs1.getLong("director_id"))
+                               .name(rs1.getString("name_director"))
+                               .build());
+                   }
+               } else {
+                   Film film = Film.builder()
+                           .id(rs1.getLong("unit_id"))
+                           .name(rs1.getString("name_film"))
+                           .description(rs1.getString("description_film"))
+                           .releaseDate(rs1.getDate("releaseDate_film").toLocalDate())
+                           .duration(rs1.getInt("duration_film"))
+                           .mpa(Mpa.builder()
+                                   .id(rs1.getLong("mpa_id"))
+                                   .name(rs1.getString("name_mpa"))
+                                   .build())
+                           .genres(new ArrayList<>())
+                           .directors(new ArrayList<>())
+                           .build();
+
+                   if (rs1.getLong("genre_id") != 0) {
+                       film.getGenres().add(Genres.builder()
+                               .id(rs1.getLong("genre_id"))
+                               .name(rs1.getString("description_genre"))
+                               .build());
+                   }
+
+                   if (rs1.getLong("director_id") != 0) {
+                       film.getDirectors().add(Directors.builder()
+                               .id(rs1.getLong("director_id"))
+                               .name(rs1.getString("name_director"))
+                               .build());
+                   }
+                   list.put(film.getId(), film);
+               }
+           }
+            return new ArrayList<>(list.values());
+       };
+        return resultSetExtractor.extractData(rs);
+   }
 }

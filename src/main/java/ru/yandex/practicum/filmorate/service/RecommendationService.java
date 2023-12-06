@@ -17,9 +17,8 @@ public class RecommendationService {
 
     private final RecommendationStorage recommendationStorage;
 
-
     public List<Film> getFilmRecommendations(Long userId) {
-
+        log.info("Вызван метод getFilmRecommendations для пользователя с id: {}", userId);
         return recommendationStorage.getRecommendedFilms(userId);
     }
 }

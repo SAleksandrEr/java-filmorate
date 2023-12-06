@@ -19,31 +19,25 @@ public class GenreService {
 
     public List<Genres> getAllGenres() {
         List<Genres> genresList = genreStorage.getAllGenres();
-        log.info("The all genres was get {} ", genresList);
+        log.info("Все жанры были получены {} ", genresList);
         return genresList;
     }
 
     public Genres findGenresId(Long id) {
         Genres genres = genreStorage.findGenresId(id);
-        log.info("The genres was get of ID {} ", id);
+        log.info("Жанры были получены по ID {} ", id);
         return genres;
-    }
-
-    public List<Genres> getFilmGenres(Long idFilm) {
-        List<Genres> genresList = genreStorage.getFilmGenres(idFilm);
-        log.info("The genres was get of film with ID {} ", idFilm);
-        return genresList;
     }
 
     public List<Genres> createGenresFilm(List<Genres> genres, Long idFilm) {
         List<Genres> genresList = genreStorage.createGenresFilm(genres, idFilm);
-        log.info("The genres was created for film with ID {}", idFilm);
+        log.info("Жанры созданы для фильма с ID {}", idFilm);
         return genresList;
     }
 
     public List<Genres> updateGenresFilm(List<Genres> genres, Long idFilm) {
         List<Genres> genresList = genreStorage.updateGenresFilm(genres, idFilm);
-        log.info("The Genre was update {}", genres.size());
+        log.info("Жанры обновлены {}", genres.size());
         return genresList;
     }
 }

@@ -37,7 +37,7 @@ public class GenreDaoImpl implements GenreStorage {
             String nameGenre = genreRows.getString("description_genre");
             return Genres.builder().name(nameGenre).id(genreId).build();
         } else {
-            throw new DataNotFoundException("The Genres has not been find with id " + id);
+            throw new DataNotFoundException("Жанры не найдены по id " + id);
         }
     }
 
@@ -60,7 +60,7 @@ public class GenreDaoImpl implements GenreStorage {
                 return stmt;
             }, keyHolder);
             if (keyHolder.getKey() == null) {
-                throw new DataNotFoundException("The Genres for Film has not been add with id " +
+                throw new DataNotFoundException("Жанры фильмов не были добавлены с id " +
                         idFilm + " - " + genres);
             }
         }

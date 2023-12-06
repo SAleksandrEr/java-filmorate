@@ -42,12 +42,12 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable e) {
-        return new ErrorResponse("An unexpected error occurred.");
+        return new ErrorResponse("Произошла непредвиденная ошибка");
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleSQLException(final SQLException e) {
-        return new ErrorResponse("Error request in the database.");
+        return new ErrorResponse("Ошибка запроса в базе данных");
     }
 }

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.Controller;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Friend;
 import ru.yandex.practicum.filmorate.model.User;
@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@Slf4j
 @RequestMapping("/users")
 public class UserController {
 
@@ -54,7 +53,7 @@ public class UserController {
     public List<Friend> createdFriendsId(@Valid @PathVariable("id") Long id,
                                          @PathVariable("friendId") Long friendId) {
         if (Objects.equals(id, friendId)) {
-            throw new DataNotFoundException("UserID and FriendId Can't be the same");
+            throw new DataNotFoundException("UserID и FriendId не могут быть одинаковыми");
         }
         return userService.createdFriendsId(id, friendId);
     }
@@ -83,13 +82,16 @@ public class UserController {
 
     @DeleteMapping("/{id}") //удаление пользователя по id
     public void userDeleteById(@PathVariable("id") Long id) {
-        log.info("вызван метод deleteUser - запрос на удаление пользователя с id " + id);
         userService.userDeleteById(id);
     }
 
     @GetMapping("/{id}/recommendations") // рекомендация для пользователя по id
     public List<Film> getFilmRecommendations(@PathVariable Long id) {
-        log.info("вызван метод getFilmRecommendations для пользователя с id: {}", id);
         return recommendationService.getFilmRecommendations(id);
+    }
+
+    @GetMapping("/{id}/feed")
+    public List<Event> findUserIdEvents(@PathVariable("id") Long id) {
+        return userService.findUserIdEvents(id);
     }
 }
