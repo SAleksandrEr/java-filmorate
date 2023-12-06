@@ -53,7 +53,7 @@ public class FilmReviewDaoImpl implements FilmReviewStorage {
                 .stream().findAny().orElse(0);
     }
 
-    public Integer makeFilmReview(ResultSet rs, int rowNum) throws SQLException {
+    private Integer makeFilmReview(ResultSet rs, int rowNum) throws SQLException {
         return rs.getInt("useful");
     }
 }

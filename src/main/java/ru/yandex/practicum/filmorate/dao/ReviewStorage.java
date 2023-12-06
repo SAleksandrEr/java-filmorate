@@ -20,8 +20,4 @@ public interface ReviewStorage {
     List<Review> getReviews(Long id, int count);
 
     boolean isContains(Long id);
-
-    void increaseScore(Review review);
-
-    void decreaseScore(Review review);
 }

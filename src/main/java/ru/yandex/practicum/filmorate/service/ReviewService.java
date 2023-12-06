@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,9 +62,9 @@ public class ReviewService {
         if (!reviewStorage.isContains(id) || id == null) {
             throw new DataNotFoundException("Отзыв не найден: пустой или неправильный идентификатор");
         }
-        log.info("Удалён отзыв с идентификатором {}", id);
         eventsStorage.createUserIdEvents(id, getReviewById(id).getUserId(), EventType.REVIEW, EventOperation.REMOVE);
         reviewStorage.deleteReviewById(id);
+        log.info("Удалён отзыв с идентификатором {}", id);
     }
 
     public Review getReviewById(Long id) {
@@ -95,16 +94,7 @@ public class ReviewService {
         filmReview.deleteDislikeFromReview(reviewId, userId);
     }
 
-//    private void checker(Long filmId, Long userId) {
-//        if (filmId == null || filmService.findFilmsId(filmId) == null) {
-//            throw new DataNotFoundException("Не найден фильм c идентификатором " + filmId);
-//        }
-//        if (userId == null || userService.findUsersId(userId) == null) {
-//            throw new DataNotFoundException("Не найден пользователь с идентификатором " + userId);
-//        }
-//    }
-
-    public static void validationReview(Review review) {
+    private static void validationReview(Review review) {
         log.info("validationReview({})", review);
         if (review.getContent() == null || review.getContent().isBlank()) {
             throw new ValidationException("Поле с описанием отзыва не может быть пустым");
@@ -112,6 +102,5 @@ public class ReviewService {
         if (review.getIsPositive() == null) {
             throw new ValidationException("Попытка присвоить значению поля isPositive null");
         }
-     //   review.setUseful(0);
     }
 }

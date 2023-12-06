@@ -58,8 +58,7 @@ public class UserDaoImpl implements UserStorage {
     @Override
     public List<User> getAllUser() {
         String sql = "SELECT * FROM User_filmorate";
-        List<User> users = jdbcTemplate.query(sql, this::makeUser);
-        return users;
+        return jdbcTemplate.query(sql, this::makeUser);
     }
 
     @Override

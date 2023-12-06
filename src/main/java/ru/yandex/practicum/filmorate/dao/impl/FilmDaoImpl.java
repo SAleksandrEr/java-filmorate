@@ -83,7 +83,7 @@ public class FilmDaoImpl implements FilmStorage {
                 "LEFT JOIN Directors AS d ON fd.director_id = d.director_id " +
                 "WHERE f.unit_id = ?";
         List<Film> films = jdbcTemplate.query(sql, this::createsFilm, id);
-        if (films.size() != 1) {
+        if (Objects.requireNonNull(films).size() != 1) {
             throw new DataNotFoundException(String.format("Фильм c id %s отсутствует", id));
         }
         return films.get(0);

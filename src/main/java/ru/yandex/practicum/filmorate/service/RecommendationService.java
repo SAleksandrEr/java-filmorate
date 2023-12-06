@@ -17,9 +17,7 @@ public class RecommendationService {
 
     private final RecommendationStorage recommendationStorage;
 
-
     public List<Film> getFilmRecommendations(Long userId) {
-
         return recommendationStorage.getRecommendedFilms(userId);
     }
 }

@@ -10,12 +10,7 @@ import ru.yandex.practicum.filmorate.model.Likes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -53,7 +48,7 @@ public class RecommendationDaoImpl implements RecommendationStorage {
         Map<Long, Long> idsAndMatchesCount = new HashMap<>();
 
         for (Long otherUserId : usersAndLikedFilmsIds.keySet()) {
-            if (otherUserId == id) {
+            if (Objects.equals(otherUserId, id)) {
                 continue;
             }
             List<Long> userLikes = new ArrayList<>(userLikedFilmsIds);

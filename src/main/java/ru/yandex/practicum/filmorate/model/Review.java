@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -54,13 +53,4 @@ public class Review {
      *
      * @see Review#Review(String, Boolean, Long, Long)
      */
-
-//    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-//    @Autowired
-//    public Review(String content, Boolean isPositive, Long userId, Long filmId) {
-//        this.content = content;
-//        this.isPositive = isPositive;
-//        this.userId = userId;
-//        this.filmId = filmId;
-//    }
 }
