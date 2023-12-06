@@ -11,7 +11,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -80,6 +80,14 @@ public class FilmService {
     public boolean deleteLikeId(Long id, Long userId) {
             log.info("The user deleted the like FilmID - {}", id);
             return likesStorage.deleteLikeId(id, userId);
+    }
+
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        Collection<Film> listOfUserFilms = filmStorage.getCommonFilms(userId);
+        Collection<Film> listOfFriendFilms = filmStorage.getCommonFilms(friendId);
+        Set<Film> commonList = new HashSet<>(listOfFriendFilms);
+        commonList.retainAll(listOfUserFilms);
+        return new ArrayList<>(commonList);
     }
 
     private void validate(Film data) {
