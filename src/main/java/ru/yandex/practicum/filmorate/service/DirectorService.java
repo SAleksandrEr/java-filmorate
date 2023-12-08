@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.DirectorStorage;
+import ru.yandex.practicum.filmorate.dao.FilmStorage;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Directors;
 
 import java.util.List;
@@ -12,9 +14,11 @@ import java.util.List;
 public class DirectorService {
 
     private final DirectorStorage directorStorage;
+    private final FilmStorage filmStorage;
 
-    public DirectorService(DirectorStorage directorStorage) {
+    public DirectorService(DirectorStorage directorStorage, FilmStorage filmStorage) {
         this.directorStorage = directorStorage;
+        this.filmStorage = filmStorage;
     }
 
     public List<Directors> getAllDirectors() {
@@ -30,9 +34,13 @@ public class DirectorService {
     }
 
     public Directors updateDirector(Directors director) {
-        Directors directors = directorStorage.updateDirector(director);
+        if (director != null) {
+            directorStorage.updateDirector(director);
+        } else {
+            throw new ValidationException("Некорретный формат данных режиссера!");
+        }
         log.info("Режиссёр обновлен {}", director);
-        return directors;
+        return director;
     }
 
     public Directors createDirector(Directors director) {
@@ -54,7 +62,9 @@ public class DirectorService {
     }
 
     public List<Directors> updateDirectorsFilm(List<Directors> director, Long idFilm) {
-        List<Directors> directors = directorStorage.updateDirectorsFilm(director, idFilm);
+        List<Directors> directors;
+        filmStorage.getFilmsId(idFilm);
+        directors = directorStorage.updateDirectorsFilm(director, idFilm);
         log.info("Режиссёры обновлены для фильма с ID {}", idFilm);
         return directors;
     }

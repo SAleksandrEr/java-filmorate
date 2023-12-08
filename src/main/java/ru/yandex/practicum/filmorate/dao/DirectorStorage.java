@@ -10,7 +10,7 @@ public interface DirectorStorage {
 
     Directors getDirectorByID(Long id);
 
-    Directors updateDirector(Directors director);
+    void updateDirector(Directors director);
 
     Directors createDirector(Directors director);
 
