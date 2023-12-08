@@ -59,7 +59,7 @@ public class ReviewService {
     }
 
     public void deleteReviewById(Long id) {
-        if (!reviewStorage.isContains(id) || id == null) {
+        if (id == null || !reviewStorage.isContains(id)) {
             throw new DataNotFoundException("Отзыв не найден: пустой или неправильный идентификатор");
         }
         eventsStorage.createUserIdEvents(id, getReviewById(id).getUserId(), EventType.REVIEW, EventOperation.REMOVE);
@@ -68,7 +68,7 @@ public class ReviewService {
     }
 
     public Review getReviewById(Long id) {
-        if (!reviewStorage.isContains(id) || id == null) {
+        if (id == null || !reviewStorage.isContains(id)) {
             throw new DataNotFoundException("Отзыв не найден: пустой или неправильный идентификатор");
         }
         return reviewStorage.getReviewById(id);

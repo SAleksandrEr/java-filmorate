@@ -90,9 +90,6 @@ public class UserService {
     }
 
     public void userDeleteById(Long id) { //метод удаления пользователя по id
-        if (userStorage.getUsersId(id) == null) {
-            throw new DataNotFoundException("Такого пользователя не существует");
-        }
         userStorage.deleteUserById(id);
         log.info("вызван метод deleteUser - запрос на удаление пользователя с id " + id);
     }

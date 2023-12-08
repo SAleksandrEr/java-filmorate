@@ -77,7 +77,7 @@ public class UserDaoImpl implements UserStorage {
             jdbcTemplate.update("DELETE FROM USER_FILMORATE WHERE USER_ID=?", id);
             jdbcTemplate.update("DELETE FROM Friends WHERE friends_id=? or user_id=?", id, id);
         } catch (EmptyResultDataAccessException e) {
-            throw new DataNotFoundException("не верный id пользователя ");
+            throw new DataNotFoundException(String.format("Не верный id %s пользователя ", id));
         }
     }
 

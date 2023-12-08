@@ -95,7 +95,7 @@ public class FilmDaoImpl implements FilmStorage {
         try {
             jdbcTemplate.update(sqlQuery, id);
         } catch (RuntimeException e) {
-            throw new DataNotFoundException("Фильм не найден");
+            throw new DataNotFoundException(String.format("Фильм c id %s не найден ", id));
         }
     }
 

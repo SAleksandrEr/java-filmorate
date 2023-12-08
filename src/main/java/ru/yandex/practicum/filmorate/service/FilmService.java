@@ -100,9 +100,6 @@ public class FilmService {
     }
 
     public void filmDeleteById(Long filmId) { //метод удаления фильма по id
-        if (filmStorage.getFilmsId(filmId) == null) {
-            throw new DataNotFoundException("Фильм с таким id не существует " + filmId);
-        }
         filmStorage.filmDeleteById(filmId);
     }
 
