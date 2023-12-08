@@ -43,10 +43,11 @@ public class DirectorDaoImpl implements DirectorStorage {
     }
 
     @Override
-    public Directors updateDirector(Directors director) {
+    public void updateDirector(Directors director) {
         String sql = "UPDATE Directors SET name_director = ? WHERE director_id = ?;";
-        jdbcTemplate.update(sql, director.getName(), director.getId());
-        return getDirectorByID(director.getId());
+        if (jdbcTemplate.update(sql, director.getName(), director.getId()) <= 0) {
+            throw new DataNotFoundException("Режиссера с таким id = " + director.getId() + " не найден");
+        }
     }
 
     @Override
@@ -58,10 +59,11 @@ public class DirectorDaoImpl implements DirectorStorage {
             stmt.setString(1, director.getName());
             return stmt;
         }, keyHolder);
-        director.setId(keyHolder.getKey().longValue());
         if (keyHolder.getKey() == null) {
             throw new DataNotFoundException("Режиссер не был добавлен с id " +
                     director.getId());
+        } else {
+            director.setId(keyHolder.getKey().longValue());
         }
         return director;
     }
@@ -88,14 +90,14 @@ public class DirectorDaoImpl implements DirectorStorage {
                         idFilm + " - " + directors);
             }
         }
-        return getFilmDirectors(idFilm);
+        return directors;
     }
 
     @Override
     public List<Directors> getFilmDirectors(Long idFilm) {
         String sql = "SELECT DISTINCT fd.director_id, d.name_director FROM Film_director AS fd INNER JOIN Directors AS d " +
                 "ON fd.director_id = d.director_id WHERE film_id = ?";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeDirectors(rs), idFilm);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeDirectorList(rs), idFilm);
     }
 
 
@@ -107,13 +109,7 @@ public class DirectorDaoImpl implements DirectorStorage {
         if (!directors.isEmpty()) {
             createDirectorsFilm(directors, idFilm);
         }
-        return getFilmDirectors(idFilm);
-    }
-
-    private Directors makeDirectors(ResultSet rs) throws SQLException {
-        long id = rs.getInt("director_id");
-        String descriptionGenre = rs.getString("name_director");
-        return Directors.builder().name(descriptionGenre).id(id).build();
+        return directors;
     }
 
     private boolean deleteDirectorsFilm(Long idFilm) {
