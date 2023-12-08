@@ -100,7 +100,6 @@ public class ReviewService {
     }
 
     private static void validationReview(Review review) {
-        log.info("validationReview({})", review);
         if (review.getContent() == null || review.getContent().isBlank()) {
             throw new ValidationException("Поле с описанием отзыва не может быть пустым");
         }

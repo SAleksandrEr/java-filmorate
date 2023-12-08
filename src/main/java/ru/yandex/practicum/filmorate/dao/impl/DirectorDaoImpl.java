@@ -100,19 +100,8 @@ public class DirectorDaoImpl implements DirectorStorage {
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeDirectorList(rs), idFilm);
     }
 
-
     @Override
-    public List<Directors> updateDirectorsFilm(List<Directors> directors, Long idFilm) {
-        if (directors.isEmpty() || !getFilmDirectors(idFilm).isEmpty()) {
-            deleteDirectorsFilm(idFilm);
-        }
-        if (!directors.isEmpty()) {
-            createDirectorsFilm(directors, idFilm);
-        }
-        return directors;
-    }
-
-    private boolean deleteDirectorsFilm(Long idFilm) {
+    public boolean deleteDirectorsFilm(Long idFilm) {
         String sqlQuery = "DELETE FROM Film_director WHERE film_id = ?";
         return jdbcTemplate.update(sqlQuery, idFilm) > 0;
     }
@@ -122,5 +111,4 @@ public class DirectorDaoImpl implements DirectorStorage {
         String directorName = rs.getString("name_director");
         return Directors.builder().name(directorName).id(id).build();
     }
-
 }

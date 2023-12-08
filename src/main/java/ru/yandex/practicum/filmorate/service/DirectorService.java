@@ -36,10 +36,10 @@ public class DirectorService {
     public Directors updateDirector(Directors director) {
         if (director != null) {
             directorStorage.updateDirector(director);
+            log.info("Режиссёр обновлен {}", director);
         } else {
             throw new ValidationException("Некорретный формат данных режиссера!");
         }
-        log.info("Режиссёр обновлен {}", director);
         return director;
     }
 
@@ -62,10 +62,14 @@ public class DirectorService {
     }
 
     public List<Directors> updateDirectorsFilm(List<Directors> director, Long idFilm) {
-        List<Directors> directors;
         filmStorage.getFilmsId(idFilm);
-        directors = directorStorage.updateDirectorsFilm(director, idFilm);
+        if (director.isEmpty() || !directorStorage.getFilmDirectors(idFilm).isEmpty()) {
+           directorStorage.deleteDirectorsFilm(idFilm);
+        }
+        if (!director.isEmpty()) {
+            createDirectorsFilm(director, idFilm);
+        }
         log.info("Режиссёры обновлены для фильма с ID {}", idFilm);
-        return directors;
+        return director;
     }
 }

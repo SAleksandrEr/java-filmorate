@@ -20,5 +20,5 @@ public interface DirectorStorage {
 
     List<Directors> getFilmDirectors(Long idFilm);
 
-    List<Directors> updateDirectorsFilm(List<Directors> directors, Long idFilm);
+    boolean deleteDirectorsFilm(Long idFilm);
 }
