@@ -34,4 +34,6 @@ public class Film extends Unit {
     private Mpa mpa;
 
     private List<Genres> genres = new ArrayList<>();
+
+    private List<Directors> directors = new ArrayList<>();
 }

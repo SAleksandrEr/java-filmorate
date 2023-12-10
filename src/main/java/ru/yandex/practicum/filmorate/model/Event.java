@@ -4,16 +4,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import javax.validation.constraints.NotNull;
-
 @Data
 @SuperBuilder
 @NoArgsConstructor(force = true)
-public class Likes {
+public class Event {
 
-    @NotNull
-    private Long userId;
+    Long eventId;
 
-    @NotNull
-    private Long filmId;
+    Long timestamp;
+
+    Long userId;
+
+    EventType eventType;
+
+    EventOperation operation;
+
+    Long entityId;
 }

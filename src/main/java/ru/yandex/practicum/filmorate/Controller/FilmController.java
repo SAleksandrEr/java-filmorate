@@ -51,12 +51,35 @@ public class FilmController {
             return filmService.deleteLikeId(id,userId);
     }
 
+    @DeleteMapping("/{id}") //удаление фильма по id
+    public void filmDeleteById(@PathVariable("id") Long filmId) {
+        filmService.filmDeleteById(filmId);
+    }
+
+    @GetMapping("/common")
+    public List<Film> getPopularFilmsForFriends(@RequestParam Long userId, @RequestParam Long friendId) {
+        return filmService.getCommonFilms(userId, friendId);
+    }
+
+
+    @GetMapping("/director/{id}")
+    public List<Film> getFilmByDirectorId(@PathVariable("id") Long id, @RequestParam String sortBy) {
+        return filmService.getFilmsByDirectorId(id, sortBy);
+    }
+
+    @GetMapping("/search")
+    public List<Film> searchNameFilmsAndDirectors(@RequestParam(value = "query", required = false) String query,
+                                                  @RequestParam(value = "by", defaultValue = "title", required = false) List<String> by) {
+        if ((by.size() > 2)) {
+            throw new ValidationException("Введенные данные не корректны " + by);
+          }
+        return filmService.searchNameFilmsAndDirectors(query, by);
+    }
+
     @GetMapping("/popular")
-    public List<Film> findFilmsOfLikes(@RequestParam(defaultValue = "10", required = false) Integer count) {
-        if (count > 0) {
-           return filmService.findFilmsOfLikes(count);
-        } else {
-            throw new ValidationException("Введенные данные не корректны " + count);
-        }
+    public List<Film> getPopularFilms(@RequestParam(required = false, defaultValue = "10") Long count,
+                                      @RequestParam(required = false) Long genreId,
+                                      @RequestParam(required = false) Long year) {
+        return filmService.getPopularFilms(count, genreId, year);
     }
 }

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao.impl;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -57,8 +58,7 @@ public class UserDaoImpl implements UserStorage {
     @Override
     public List<User> getAllUser() {
         String sql = "SELECT * FROM User_filmorate";
-        List<User> users = jdbcTemplate.query(sql, this::makeUser);
-        return users;
+        return jdbcTemplate.query(sql, this::makeUser);
     }
 
     @Override
@@ -69,6 +69,16 @@ public class UserDaoImpl implements UserStorage {
             throw new DataNotFoundException("Data not found " + id + " - " + users);
         }
         return users.get(0);
+    }
+
+    @Override
+    public void deleteUserById(Long id) {
+        try {
+            jdbcTemplate.update("DELETE FROM USER_FILMORATE WHERE USER_ID=?", id);
+            jdbcTemplate.update("DELETE FROM Friends WHERE friends_id=? or user_id=?", id, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new DataNotFoundException(String.format("Не верный id %s пользователя ", id));
+        }
     }
 
     private User makeUser(ResultSet rs, int rowNum) throws SQLException {
